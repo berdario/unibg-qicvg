@@ -2,7 +2,7 @@ grammar qicvg;
 
 prog 	:	row? (ENDL row?)* ;
 
-row 	:	(def|defs)? COMMENT?;
+row 	:	(def|defs) COMMENT?|COMMENT;
 
 defs	:	'stile'ID'('style')'|'nfstile' ID'('nfstyle')';
 
