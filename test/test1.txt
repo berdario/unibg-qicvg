@@ -1,0 +1,12 @@
+path pippo (0,0)
+path pippo (0,3)
+path pluto (20,30,#FFF,blue,3).C(1,400,600,200,800,600).Z()
+circle C1 (100, 100, 10 )
+circle C2 (100, 100, (C1.r * 2) )
+style bigblu (blue,#004499,8)
+nfstyle emptyblue (blue,8)
+path pluto (20,30,#FFF,blue,3).T(1,400,600,200,800,600)
+star stella (0,0, (7*(C2.r+2*9)/8+1) ,5, bigblu)
+line linea (0,0,5,5,emptyblue)
+
+

@@ -1,0 +1,2 @@
+
+path pippo (0,0)
