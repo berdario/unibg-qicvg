@@ -1,1 +1,5 @@
 output
+test/bin
+test/lib
+test/.classpath
+test/.project
