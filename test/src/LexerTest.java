@@ -15,10 +15,19 @@ import org.antlr.runtime.CommonTokenStream;
 
 public class LexerTest {
 	
-	ArrayList<String> files = new ArrayList<String>();
+	static ArrayList<String> files = new ArrayList<String>(), failFiles = new ArrayList<String>();
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		File currentDirectory = new File(".");
+		for (String fn : currentDirectory.list()){
+			if (fn.endsWith(".fail.txt")){
+				failFiles.add(fn);
+			}
+			else if (fn.endsWith(".txt")){
+				files.add(fn);
+			}
+		}
 	}
 
 	@AfterClass
@@ -27,9 +36,6 @@ public class LexerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		for (int i=1;i<8;i++){
-			files.add("test"+i+".txt");
-		}
 	}
 
 	@After
@@ -41,7 +47,14 @@ public class LexerTest {
 		for (String f : files){
 			qicvgLexer lex = new qicvgLexer(new ANTLRFileStream(f,"UTF8"));
 			CommonTokenStream tokens = new CommonTokenStream(lex);
-			System.out.println(f+":\n"+tokens.getTokens());
+			tokens.getTokens();
+			assertTrue("Errore inaspettato nel lexing di "+f, lex.getExceptions().size()==0 );
+		}
+		for (String f : failFiles){
+			qicvgLexer lex = new qicvgLexer(new ANTLRFileStream(f,"UTF8"));
+			CommonTokenStream tokens = new CommonTokenStream(lex);
+			tokens.getTokens();
+			assertTrue("Riconoscimento invalido dei token in "+f, lex.getExceptions().size()>0 );
 		}
 	}
 

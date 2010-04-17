@@ -1,0 +1,2 @@
+path pluto (20,30,#FFFF,blue,3)
+//colore con 4 numeri esadecimali

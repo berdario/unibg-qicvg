@@ -1,5 +1,21 @@
 grammar qicvg;
 
+@lexer::members {
+
+	List<RecognitionException> exceptions = new ArrayList<RecognitionException>();
+
+	public List<RecognitionException> getExceptions() {
+		return exceptions;
+	}
+
+	@Override
+	public void reportError(RecognitionException e) {
+		super.reportError(e);
+		exceptions.add(e);
+	}
+
+}
+
 INT :	'0'..'9'+
     ;
 

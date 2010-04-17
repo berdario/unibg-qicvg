@@ -1,5 +1,5 @@
 path pippo (0,0)
-path pippo (0,3)
+path pippo(0,3)
 path pluto (20,30,#FFF,blue,3).C(1,400,600,200,800,600).Z()
 circle C1 (100, 100, 10 )
 circle C2 (100, 100, (C1.r * 2) )
