@@ -97,7 +97,12 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')'
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)*
 	|	SHAPE ID '(' point ',' coord (','style)? ')'
 	|	(REGULARSHAPE|COMPLEXSHAPE) ID '(' point ',' coord ',' coord (','style)? ')'
+	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']'
 	;
+	
+containerrow	:	(def|defs|innerdef) COMMENT?|COMMENT;
+
+innerdef:	ID ID '(' point ',' point ')';
 	
 style 	:	 ((color?','color?','INT)|ID);
 
