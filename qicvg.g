@@ -1,5 +1,35 @@
 grammar qicvg;
 
+options{
+	output=AST;
+}
+
+tokens {
+	MATH;
+	POSITION;
+	HORIZLEN;
+	VERTLEN;
+	RADIUS;
+	VERTEXES;
+	SIDELEN;
+	INITPOSITION;
+	FINALPOSITION;
+	STYLE;
+	BORDERCOLOR;
+	FILLCOLOR;
+	BORDERWIDTH;
+	CLOSE;
+	BEZIER;
+	SHORTHANDBEZIER;
+	QUADRATICBEZIER;
+	SHORTHANDQUADRATICBEZIER;
+	CONTROLPOINT;
+	MOVETO;
+	LINETO;
+	HORIZONTALLINE;
+	VERTICALLINE;
+}
+
 @lexer::members {
 
 	List<RecognitionException> exceptions = new ArrayList<RecognitionException>();
@@ -15,6 +45,8 @@ grammar qicvg;
 	}
 
 }
+
+ROW	:	;
 
 INT :	'0'..'9'+
     ;
@@ -68,10 +100,6 @@ IDATTRIB
 	:	('x'|'y'|'x2'|'y2'|'dim1'|'dim2'|'nvert'|'r')
 	;
 
-POINTEL	:	'M'|'L';
-
-COORDEL	:	'H'|'V';
-
 COLORNAME
 	:	'orange'|'blue'|'aqua'| 'black'| 'fuchsia'| 'gray'| 'green'| 'lime'| 'maroon'| 'navy'| 'olive'| 'purple'| 'red'| 'silver'|' teal'|' white'| 'yellow';
 	
@@ -83,40 +111,45 @@ REGULARSHAPE
 COMPLEXSHAPE:	'polreg'|'star';
 
 
-
-
-
-prog 	:	row? (ENDL row?)* ;
+prog 	:	row? (ENDL row?)* -> row*;
                
 
 row 	:	(def|defs) COMMENT?|COMMENT;
 
-defs	:	'style'ID'('style')'|'nfstyle' ID'('nfstyle')';
+defs	:	'style' ID '(' style ')' -> ^('style' ID style)  | 'nfstyle' ID '(' nfstyle ')' -> ^('nfstyle' ID nfstyle);
 
-def	:	'line' ID '(' point ',' point (',' nfstyle)? ')'
-	|	'path' ID '(' point (',' style)? ')' ('.' pathel)*
-	|	SHAPE ID '(' point ',' coord (','style)? ')'
-	|	(REGULARSHAPE|COMPLEXSHAPE) ID '(' point ',' coord ',' coord (','style)? ')'
-	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']'
+def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) nfstyle?)
+	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
+	|	tempshape
+	|	REGULARSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
+	|	COMPLEXSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(COMPLEXSHAPE ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
+	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']' -> ^('container' ID ^(POSITION point) (containerrow)*)
 	;
+	
+tempshape	:	SHAPE ID '(' point ',' coord (','style)? ')' -> {$SHAPE.text=="square"}? ^(SHAPE ID ^(POSITION point) ^(SIDELEN coord) style?)
+								-> ^(SHAPE ID ^(POSITION point) ^(RADIUS coord) style?) ;
 	
 containerrow	:	(def|defs|innerdef) COMMENT?|COMMENT;
 
-innerdef:	ID ID '(' point ',' point ')';
+innerdef:	ID ID '(' point ',' point ')' -> ^(ID ID point point);
 	
-style 	:	 ((color?','color?','INT)|ID);
+style 	:	(color?','color?','INT) -> ^(STYLE ^(FILLCOLOR color) ^(BORDERCOLOR color) ^(BORDERWIDTH INT))
+	|	ID  ;
 
-nfstyle	:	((color?','INT)|ID);
+nfstyle	:	(color?','INT) -> ^(STYLE ^(BORDERCOLOR color) ^(BORDERWIDTH INT))
+	|	ID;
 	
-point	:	coord','coord;
+point	:	coord ',' coord -> coord coord;
 
-pathel	:	POINTEL'('point')'
-	|	'Z()'
-	|	COORDEL'('coord')'
-	|	'C('point','point','point')'
-	|	'S('point','point')'
-	|	'T('point(','point)*')'
-	|	'Q('point(','point)+')'
+pathel	:	'M''('point')' -> ^(MOVETO ^(POSITION point))
+	|	'L''('point')' -> ^(LINETO ^(POSITION point))
+	|	'Z()' -> CLOSE
+	|	'H''('coord')' -> ^(HORIZONTALLINE coord)
+	|	'V''('coord')' -> ^(VERTICALLINE coord)
+	|	'C('point','point','point')' -> ^(BEZIER ^(CONTROLPOINT point) ^(CONTROLPOINT point) ^(CONTROLPOINT point) )
+	|	'S('point','point')' -> ^(SHORTHANDBEZIER ^(CONTROLPOINT point) ^(CONTROLPOINT point) )
+	|	'T('point(','point)*')' -> ^(SHORTHANDQUADRATICBEZIER ^(CONTROLPOINT point) ^(CONTROLPOINT point)* )
+	|	'Q('point(','point)+')' -> ^(QUADRATICBEZIER ^(CONTROLPOINT point) ^(CONTROLPOINT point)+ )
 	;
 
 color	:	COLORNAME|HEXNUMBER;
@@ -126,7 +159,7 @@ term	:	coord(('*'|'/')coord)*;
 
 math	:	term(('+'|'-')term)*;
 
-coord	:	INT|'('math')'|ID'.'IDATTRIB;
+coord	:	INT|'(' math ')' -> ^(MATH math) |ID'.'IDATTRIB -> ^(ID IDATTRIB) ;
 
 ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
 		;
