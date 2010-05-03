@@ -131,7 +131,7 @@ tempshape	:	SHAPE ID '(' point ',' coord (','style)? ')' -> {$SHAPE.text=="squar
 	
 containerrow	:	(def|defs|innerdef) COMMENT?|COMMENT;
 
-innerdef:	ID ID '(' point ',' point ')' -> ^(ID ID point point);
+innerdef:	ID ID '(' point ',' point ')' -> ^(ID ID ^(INITPOSITION point) ^(FINALPOSITION point));
 	
 style 	:	(color?','color?','INT) -> ^(STYLE ^(FILLCOLOR color) ^(BORDERCOLOR color) ^(BORDERWIDTH INT))
 	|	ID  ;
@@ -154,12 +154,13 @@ pathel	:	'M''('point')' -> ^(MOVETO ^(POSITION point))
 
 color	:	COLORNAME|HEXNUMBER;
 
+math	:	('+'|'-')?term(('+'|'-')term)*;
 
-term	:	coord(('*'|'/')coord)*;
+term	:	atom(('*'|'/')atom)*;
 
-math	:	term(('+'|'-')term)*;
+coord	:	math -> ^(MATH math);
 
-coord	:	INT|'(' math ')' -> ^(MATH math) |ID'.'IDATTRIB -> ^(ID IDATTRIB) ;
+atom	:	INT|'(' math ')' -> ^(MATH math) |ID'.'IDATTRIB -> ^(ID IDATTRIB) ;
 
 ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
 		;

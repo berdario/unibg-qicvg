@@ -2,24 +2,24 @@ path pippo (0,0)
 path pippo(0,3)//questo è un commento
 path pluto (20,30,#FFF,blue,3).C(1,400,600,200,800,600).Z()
 circle C1 (100, 100, 10 )
-circle C2 (100, 100, (C1.r * 2) )
+circle C2 (100, 100, C1.r * 2 )
 style bigblu (blue,#004499,8)
 nfstyle emptyblue (blue,8)
 path pluto (20,30,#FFF,blue,3).T(1,400,600,200,800,600)
-path paperino (40,40).H(100).V(100).M(110,110).L(30,30)
-star stella (0,0, (7*(C2.r+2*9)/8+1) ,5, bigblu)
+path paperino (40,40).H(-100).V(-100).M(110,110).L(30,30)
+star stella (0,0, 7*(C2.r+2*9)/8+1 ,5, bigblu)
 line linea (0,0,5,5,emptyblue)
 container frattale (0,0)[
-line linea1 (frattale.x,frattale.y,(frattale.x+1),frattale.y)
-frattale frattale1 ((frattale.x+1),frattale.y,(frattale.x+2),(frattale.y+1))
-frattale frattale2 ((frattale.x+2),(frattale.y+1),(frattale.x+3),frattale.y)
-line linea2 ((frattale.x+3),frattale.y,(frattale.x+4),frattale.y)
+line linea1 (frattale.x,frattale.y,frattale.x+1,frattale.y)
+frattale frattale1 (frattale.x+1,frattale.y,frattale.x+2,frattale.y+1)
+frattale frattale2 (frattale.x+2,frattale.y+1,frattale.x+3,frattale.y)
+line linea2 (frattale.x+3,frattale.y,frattale.x+4,frattale.y)
 ]
 container frattale2 (0,0)[
-line linea1 (frattale.x,frattale.y,(frattale.x+1),frattale.y)
-frattale frattale1 (linea1.x2,linea1.y2,(linea1.x2+1),(linea1.y2+1))
-frattale frattale2 (frattale1.x2,frattale1.y2,(frattale1.x2+1),(frattale1.y2-1))
-line linea2 (frattale2.x2,frattale2.y2,(frattale2.x2+1),frattale2.y2)
+line linea1 (frattale.x,frattale.y,frattale.x+1,frattale.y)
+frattale frattale1 (linea1.x2,linea1.y2,linea1.x2+1,linea1.y2+1)
+frattale frattale2 (frattale1.x2,frattale1.y2,frattale1.x2+1,frattale1.y2-1)
+line linea2 (frattale2.x2,frattale2.y2,frattale2.x2+1,frattale2.y2)
 ]
 container frattale3 (0,0)[]
 
