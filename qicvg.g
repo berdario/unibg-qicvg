@@ -46,10 +46,7 @@ tokens {
 
 }
 
-ROW	:	;
-
-INT :	'0'..'9'+
-    ;
+INT :	'0'..'9'+ ;
 
 FLOAT
     :   ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
@@ -116,7 +113,7 @@ prog 	:	row? (ENDL row?)* -> row*;
 
 row 	:	(def|defs) COMMENT?|COMMENT;
 
-defs	:	'style' ID '(' style ')' -> ^('style' ID style)  | 'nfstyle' ID '(' nfstyle ')' -> ^('nfstyle' ID nfstyle);
+defs	:	'style' ID '(' style ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyle ')' -> ^('nfstyle' ID nfstyledef);
 
 def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) nfstyle?)
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
@@ -133,11 +130,16 @@ containerrow	:	(def|defs|innerdef) COMMENT?|COMMENT;
 
 innerdef:	ID ID '(' point ',' point ')' -> ^(ID ID ^(INITPOSITION point) ^(FINALPOSITION point));
 	
-style 	:	(color?','color?','INT) -> ^(STYLE ^(FILLCOLOR color) ^(BORDERCOLOR color) ^(BORDERWIDTH INT))
+style 	:	styledef
 	|	ID  ;
+	
+styledef:	(color?','color?','INT?) -> ^(STYLE ^(FILLCOLOR color)? ^(BORDERCOLOR color)? ^(BORDERWIDTH INT)?);
 
-nfstyle	:	(color?','INT) -> ^(STYLE ^(BORDERCOLOR color) ^(BORDERWIDTH INT))
+nfstyle	:	nfstyledef
 	|	ID;
+	
+nfstyledef
+	:	(color?','INT) -> ^(STYLE ^(BORDERCOLOR color)? ^(BORDERWIDTH INT)?);
 	
 point	:	coord ',' coord -> coord coord;
 

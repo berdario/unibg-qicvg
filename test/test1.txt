@@ -1,6 +1,7 @@
 path pippo (0,0)
 path pippo(0,3)//questo è un commento
 path pluto (20,30,#FFF,blue,3).C(1,400,600,200,800,600).Z()
+path constileincompleto (10,10,,,)
 circle C1 (100, 100, 10 )
 circle C2 (100, 100, C1.r * 2 )
 style bigblu (blue,#004499,8)
