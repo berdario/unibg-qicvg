@@ -113,7 +113,7 @@ prog 	:	row? (ENDL row?)* -> row*;
 
 row 	:	(def|defs) COMMENT?|COMMENT;
 
-defs	:	'style' ID '(' style ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyle ')' -> ^('nfstyle' ID nfstyledef);
+defs	:	'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef);
 
 def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) nfstyle?)
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
@@ -156,13 +156,15 @@ pathel	:	'M''('point')' -> ^(MOVETO ^(POSITION point))
 
 color	:	COLORNAME|HEXNUMBER;
 
-math	:	('+'|'-')?term(('+'|'-')term)*;
+math	:	term(('+'|'-')^term)* ;
 
-term	:	atom(('*'|'/')atom)*;
+term	:	atom(('*'|'/')^atom)*;
 
-coord	:	math -> ^(MATH math);
+coord	:	math ;
 
-atom	:	INT|'(' math ')' -> ^(MATH math) |ID'.'IDATTRIB -> ^(ID IDATTRIB) ;
+atom	:	('+'|'-')?INT
+	|	'(' math ')' -> ^(MATH math) 
+	|	ID'.'IDATTRIB -> ^(ID IDATTRIB) ;
 
 ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
 		;
