@@ -30,7 +30,7 @@ tokens {
 	VERTICALLINE;
 }
 
-@lexer::members {
+@members {
 
 	List<RecognitionException> exceptions = new ArrayList<RecognitionException>();
 
@@ -45,6 +45,8 @@ tokens {
 	}
 
 }
+
+prog 	:	row? (ENDL row?)* -> row*;
 
 INT :	'0'..'9'+ ;
 
@@ -108,8 +110,6 @@ REGULARSHAPE
 COMPLEXSHAPE:	'polreg'|'star';
 
 
-prog 	:	row? (ENDL row?)* -> row*;
-               
 
 row 	:	(def|defs) COMMENT?|COMMENT;
 
