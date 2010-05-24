@@ -4,3 +4,6 @@ test/lib
 test/.classpath
 test/.project
 debugoutput
+lib
+.classpath
+.project

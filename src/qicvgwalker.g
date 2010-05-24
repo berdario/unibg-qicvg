@@ -3,6 +3,8 @@ tree grammar qicvgwalker;
 options {
     tokenVocab=qicvg ; // reuse token types
     ASTLabelType=CommonTree; // $label will have type CommonTree
+    output=template;
+    rewrite=true;
 }
 
 prog 	:	(def|defs)*;
@@ -10,7 +12,7 @@ prog 	:	(def|defs)*;
 defs	:	^(('style'|'nfstyle') ID styledef);
 
 def	:	^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) style?)
-	|	^('path' ID ^(POSITION point) style? pathel*)
+	|	^('path' ID ^(POSITION point) style? pathel*)// -> "questo e un path"
 	|	^('square' ID ^(POSITION point) ^(SIDELEN coord) style?)
 	|	^('circle' ID ^(POSITION point) ^(RADIUS coord) style?) 
 	|	^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
