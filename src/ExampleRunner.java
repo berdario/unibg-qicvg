@@ -1,6 +1,8 @@
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import org.antlr.runtime.ANTLRFileStream;
@@ -11,6 +13,7 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.TreeRewriter;
+import org.antlr.stringtemplate.StringTemplateGroup;
 
 
 public class ExampleRunner {
@@ -35,6 +38,12 @@ public class ExampleRunner {
 			CommonTreeNodeStream aststream = new CommonTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);
 			qicvgwalker walker = new qicvgwalker(aststream);
+			
+			FileReader templateFile = new FileReader("src" + File.separator + "qicvgwalker.stg");
+			StringTemplateGroup templates = new StringTemplateGroup(templateFile);
+			templateFile.close();
+			walker.setTemplateLib(templates);
+			
 			walker.prog();
 			System.out.println("\n"+tokens.toString());
 			

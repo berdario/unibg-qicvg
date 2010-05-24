@@ -1,0 +1,6 @@
+group qicvgwalker;
+path(id,style) ::= "\<path id=\"<id>\" <style> \>"
+fillcolor(color) ::= "<if(color)>fill:<color>;<endif>"
+strokecolor(color) ::= "<if(color)>stroke:<color>;<endif>"
+stroke(width) ::= "<if(width)>stroke-width:<width>;<endif>"
+styledef(color,bordercolor,width) ::= "style=\"<fillcolor(color=color)> <strokecolor(color=bordercolor)> <stroke(width=width)>\""
