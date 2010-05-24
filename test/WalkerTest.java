@@ -23,11 +23,12 @@ public class WalkerTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		File currentDirectory = new File(".");
+		String testdir = "test" + File.separator;
+		File currentDirectory = new File(testdir);
 		System.out.println(currentDirectory.getAbsolutePath());
 		for (String fn : currentDirectory.list()){
 			if ((fn.endsWith(".txt") && !(fn.endsWith(".failL.txt")) && !(fn.endsWith(".failP.txt")))){
-				files.add(fn);
+				files.add(testdir + fn);
 			}
 		}
 	}

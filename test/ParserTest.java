@@ -19,13 +19,14 @@ static ArrayList<String> files = new ArrayList<String>(), failFiles = new ArrayL
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		File currentDirectory = new File(".");
+		String testdir = "test" + File.separator;
+		File currentDirectory = new File(testdir);
 		for (String fn : currentDirectory.list()){
 			if (fn.endsWith(".failP.txt")){
-				failFiles.add(fn);
+				failFiles.add(testdir + fn);
 			}
 			else if (fn.endsWith(".txt") && !(fn.endsWith(".failL.txt"))){
-				files.add(fn);
+				files.add(testdir + fn);
 			}
 		}
 	}

@@ -12,7 +12,7 @@ prog 	:	(def|defs)*;
 defs	:	^(('style'|'nfstyle') ID styledef);
 
 def	:	^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) style?)
-	|	^('path' ID ^(POSITION point) style? pathel*)// -> "questo e un path"
+	|	^('path' ID ^(POSITION point) style? pathel*) //-> template(id={$ID.text},style={$style.text}) "\<path id=\"<id>\" <style> \>"
 	|	^('square' ID ^(POSITION point) ^(SIDELEN coord) style?)
 	|	^('circle' ID ^(POSITION point) ^(RADIUS coord) style?) 
 	|	^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
@@ -28,7 +28,7 @@ innerdef:	^(ID ID ^(INITPOSITION point) ^(FINALPOSITION point));
 	
 style	:	styledef | ID;
 
-styledef 	:	^(STYLE (^(FILLCOLOR color))? (^(BORDERCOLOR color))? (^(BORDERWIDTH INT))?);
+styledef 	:	^(STYLE (^(FILLCOLOR color))? (^(BORDERCOLOR color))? (^(BORDERWIDTH INT))?) ;//-> template() "fill:";
 	
 point	:	coord coord;
 

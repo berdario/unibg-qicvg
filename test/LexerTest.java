@@ -16,13 +16,14 @@ public class LexerTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		File currentDirectory = new File(".");
+		String testdir = "test" + File.separator;
+		File currentDirectory = new File(testdir);
 		for (String fn : currentDirectory.list()){
 			if (fn.endsWith(".failL.txt")){
-				failFiles.add(fn);
+				failFiles.add(testdir + fn);
 			}
 			else if (fn.endsWith(".txt")){
-				files.add(fn);
+				files.add(testdir + fn);
 			}
 		}
 	}
