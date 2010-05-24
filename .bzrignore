@@ -7,3 +7,9 @@ debugoutput
 lib
 .classpath
 .project
+bin
+src/qicvg.tokens
+src/qicvgLexer.java
+src/qicvgParser.java
+src/qicvgwalker.java
+src/qicvgwalker.tokens
