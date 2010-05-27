@@ -101,8 +101,6 @@ IDATTRIB
 
 COLORNAME
 	:	'orange'|'blue'|'aqua'| 'black'| 'fuchsia'| 'gray'| 'green'| 'lime'| 'maroon'| 'navy'| 'olive'| 'purple'| 'red'| 'silver'|' teal'|' white'| 'yellow';
-	
-SHAPE	:	'circle'|'square';
 
 REGULARSHAPE
 	:	'rect'|'ellipse';
@@ -117,14 +115,12 @@ defs	:	'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '('
 
 def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) nfstyle?)
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
-	|	tempshape
+	|	'square' ID '(' point ',' coord (','style)? ')' -> ^('square' ID ^(POSITION point) ^(SIDELEN coord) style?)
+	| 'circle' ID '(' point ',' coord (','style)? ')' -> ^('circle' ID ^(POSITION point) ^(RADIUS coord) style?)
 	|	REGULARSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
 	|	COMPLEXSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(COMPLEXSHAPE ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']' -> ^('container' ID ^(POSITION point) (containerrow)*)
 	;
-	
-tempshape	:	SHAPE ID '(' point ',' coord (','style)? ')' -> {$SHAPE.text=="square"}? ^(SHAPE ID ^(POSITION point) ^(SIDELEN coord) style?)
-								-> ^(SHAPE ID ^(POSITION point) ^(RADIUS coord) style?) ;
 	
 containerrow	:	(def|defs|innerdef) COMMENT?|COMMENT;
 
