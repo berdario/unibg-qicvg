@@ -105,10 +105,6 @@ COLORNAME
 REGULARSHAPE
 	:	'rect'|'ellipse';
 
-COMPLEXSHAPE:	'polreg'|'star';
-
-
-
 row 	:	(def|defs) COMMENT?|COMMENT;
 
 defs	:	'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef);
@@ -118,7 +114,8 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSI
 	|	'square' ID '(' point ',' coord (','style)? ')' -> ^('square' ID ^(POSITION point) ^(SIDELEN coord) style?)
 	| 'circle' ID '(' point ',' coord (','style)? ')' -> ^('circle' ID ^(POSITION point) ^(RADIUS coord) style?)
 	|	REGULARSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
-	|	COMPLEXSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(COMPLEXSHAPE ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
+	|	'star' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('star' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
+	| 'polreg' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('polreg' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']' -> ^('container' ID ^(POSITION point) (containerrow)*)
 	;
 	

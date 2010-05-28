@@ -1,8 +1,12 @@
 group qicvgwalker;
 line(id,x1,y1,x2,y2,style) ::= "\<line id=\"<id>\" x1=\"<x1>\" y1=\"<y1>\" x2=\"<x2>\" y2=\"<y2>\" <style> /\>"
-path(id,style) ::= "\<path id=\"<id>\" <style> /\>"
+path(id,point,pathelements,style) ::= "\<path id=\"<id>\" d=\"M <point><pathelements>\" <style> /\>"
 square(id,x,y,size,style) ::= "\<rect id=\"<id>\" x=\"<x>\" y=\"<y>\" width=\"<size>\" height=\"<size>\" <style> /\>"
 circle(id,cx,cy,r,style) ::= "\<circle id=\"<id>\" cx=\"<cx>\" cy=\"<cy>\" r=\"<r>\" <style> /\>"
+rect(id,x,y,width,height,style) ::= "\<rect id=\"<id>\" x=\"<x>\" y=\"<y>\" width=\"<width>\" height=\"<height>\" <style> /\>"
+ellipse(id,cx,cy,rx,ry,style) ::= "\<ellipse id=\"<id>\" cx=\"<cx>\" cy=\"<cy>\" rx=\"<rx>\" ry=\"<ry>\" <style> /\>"
+star(id,path,style) ::= "star <path>"
+polreg(id,path,style) ::= "\<path id=\"<id>\" d=\"<path>\" <style> /\>"
 fillcolor(color) ::= "<if(color)>fill:<color>;<endif>"
 strokecolor(color) ::= "<if(color)>stroke:<color>;<endif>"
 stroke(width) ::= "<if(width)>stroke-width:<width>;<endif>"
