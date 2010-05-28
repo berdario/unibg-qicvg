@@ -40,9 +40,9 @@ options {
   }
 }
 
-prog 	:	(def|defs)*;
+prog 	:	(def comment*)*;
 
-defs	:	^(('style'|'nfstyle') ID styledef) -> ;
+comment: ^(COMMENTTEXT COMMENT) -> template(c={$COMMENT.text}) "\<!--<c>--\>" ;
 
 def:
   	^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) 
@@ -61,13 +61,14 @@ def:
 	| ^('polreg' ID ^(POSITION point) ^(RADIUS r=coord) ^(VERTEXES n=coord) style?) {String path=getPolygonPath($point.c1,$point.c2,$r.text,$n.text);}
 	   -> polreg(id={$ID.text},path={path},style={$style.text})
 	|	^('container' ID ^(POSITION point) (containerrow)*)
+	| ^(('style'|'nfstyle') ID styledef) -> 
 	;
 	
-containerrow	:	def
-		|defs
-		|innerdef;
+containerrow	:	innerdef comment*;
 
-innerdef:	^(ID ID ^(INITPOSITION point) ^(FINALPOSITION point));
+innerdef:
+    def	
+  | ^(ID ID ^(INITPOSITION point) ^(FINALPOSITION point));
 	
 style	:	styledef | ID;
 
