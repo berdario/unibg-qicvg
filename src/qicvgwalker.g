@@ -40,9 +40,9 @@ options {
   }
 }
 
-prog 	:	(def comment*)*;
+prog 	:	(^(ROW def comment?) | ^(ROW comment))*;
 
-comment: ^(COMMENTTEXT COMMENT) -> template(c={$COMMENT.text}) "\<!--<c>--\>" ;
+comment: COMMENT -> template(c={$COMMENT.text}) "\<!--<c>--\>" ;
 
 def:
   	^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) 
@@ -64,7 +64,7 @@ def:
 	| ^(('style'|'nfstyle') ID styledef) -> 
 	;
 	
-containerrow	:	innerdef comment*;
+containerrow	:	^(ROW innerdef comment?)| ^(ROW comment);
 
 innerdef:
     def	

@@ -28,7 +28,7 @@ tokens {
 	LINETO;
 	HORIZONTALLINE;
 	VERTICALLINE;
-	COMMENTTEXT;
+	ROW;
 }
 
 @members {
@@ -47,7 +47,7 @@ tokens {
 
 }
 
-prog 	:	row? (ENDL row?)* -> row*;
+prog 	:	row? (ENDL row?)* -> ^(ROW row)*;
 
 INT :	'0'..'9'+ ;
 
@@ -58,7 +58,7 @@ FLOAT
     ;
 
 COMMENT
-    :   '//' ~('\n'|'\r')*
+    :   '//' ~('\n'|'\r')* 
     ;
 
 WS  :   ( ' '
@@ -106,7 +106,7 @@ COLORNAME
 REGULARSHAPE
 	:	'rect'|'ellipse';
 
-row 	:	def COMMENT? -> def ^(COMMENTTEXT COMMENT)?|COMMENT -> ^(COMMENTTEXT COMMENT);	
+row 	:	def COMMENT? |COMMENT ;	
 
 def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) nfstyle?)
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
@@ -115,11 +115,11 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSI
 	|	REGULARSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
 	|	'star' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('star' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	| 'polreg' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('polreg' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
-	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']' -> ^('container' ID ^(POSITION point) (containerrow)*)
+	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']' -> ^('container' ID ^(POSITION point) ^(ROW containerrow)*)
 	| 'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef)
 	;
 	
-containerrow	:	innerdef COMMENT? -> innerdef ^(COMMENTTEXT COMMENT)?|COMMENT -> ^(COMMENTTEXT COMMENT);
+containerrow	:	innerdef COMMENT? |COMMENT ;
 
 innerdef: 
     def
