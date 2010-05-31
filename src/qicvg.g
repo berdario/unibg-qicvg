@@ -97,14 +97,11 @@ UNICODE_ESC
     ;
     
 IDATTRIB  
-	:	('x'|'y'|'x2'|'y2'|'dim1'|'dim2'|'nvert'|'r')
+	:	('x'|'y'|'x2'|'y2'|'dim1'|'dim2'|'nvert'|'r'|'cx'|'cy')
 	;
 
 COLORNAME
 	:	'orange'|'blue'|'aqua'| 'black'| 'fuchsia'| 'gray'| 'green'| 'lime'| 'maroon'| 'navy'| 'olive'| 'purple'| 'red'| 'silver'|' teal'|' white'| 'yellow';
-
-REGULARSHAPE
-	:	'rect'|'ellipse';
 
 row 	:	def COMMENT? |COMMENT ;	
 
@@ -112,11 +109,13 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSI
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
 	|	'square' ID '(' point ',' coord (','style)? ')' -> ^('square' ID ^(POSITION point) ^(SIDELEN coord) style?)
 	| 'circle' ID '(' point ',' coord (','style)? ')' -> ^('circle' ID ^(POSITION point) ^(RADIUS coord) style?)
-	|	REGULARSHAPE ID '(' point ',' coord ',' coord (','style)? ')' -> ^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
+	|	'rect' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('rect' ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
+	| 'ellipse' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('ellipse' ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
 	|	'star' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('star' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	| 'polreg' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('polreg' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']' -> ^('container' ID ^(POSITION point) ^(ROW containerrow)*)
 	| 'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef)
+	
 	;
 	
 containerrow	:	innerdef COMMENT? |COMMENT ;

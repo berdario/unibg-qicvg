@@ -87,16 +87,25 @@ def:
 	     var.put("r",$expr.val);
 	   }
 	   -> circle(id={$ID.text},cx={$point.c1},cy={$point.c2},r={$expr.val},style={$style.text})
-	|	^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
+	|	^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
-       //System.out.println("trovato regularshape"+ $ID.text);
+       System.out.println("trovato rect"+ $ID.text);
        HashMap<String, Number> var = initVar($ID.text);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
+       var.put("height",$v.val);
+       var.put("width",$h.val);
      }
-     -> {$REGULARSHAPE.text.equals("rect")}? rect(id={$ID.text},x={$point.c1},y={$point.c2},width={$h.text},height={$v.text},style={$style.text}) 
-	   
-	   -> ellipse(id={$ID.text},cx={$point.c1},cy={$point.c2},rx={$h.text},ry={$v.text},style={$style.text})
+     -> rect(id={$ID.text},x={$point.c1},y={$point.c2},width={$h.val},height={$v.val},style={$style.text}) 
+	|  ^('ellipse' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
+	   {
+       HashMap<String, Number> var = initVar($ID.text);
+       var.put("cx",$point.c1);
+       var.put("cy",$point.c2);
+       var.put("rx",$h.val);
+       var.put("ry",$v.val); 
+	   }   
+	   -> ellipse(id={$ID.text},cx={$point.c1},cy={$point.c2},rx={$h.val},ry={$v.val},style={$style.text})
 	|	^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getStarPath($point.c1,$point.c2,$r.text,$n.text);} 
 	   {
        //System.out.println("trovato stella "+ $ID.text + " in " + $point.c1);
