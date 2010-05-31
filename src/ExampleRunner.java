@@ -24,7 +24,7 @@ public class ExampleRunner {
 	 * @throws RecognitionException 
 	 */
 	public static void main(String[] args) throws IOException, RecognitionException {
-		qicvgLexer lex = new qicvgLexer(new ANTLRFileStream("/home/dario/Documenti/linguaggi/qicvg/test/test1.txt","UTF8"));
+		qicvgLexer lex = new qicvgLexer(new ANTLRFileStream("/home/marco/Scrivania/linguaggi/qicvg/test/test1.txt","UTF8"));
 		TokenRewriteStream tokens = new TokenRewriteStream(lex);
 		qicvgParser parser = new qicvgParser(tokens);
 		

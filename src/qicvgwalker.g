@@ -61,10 +61,23 @@ comment: COMMENT -> template(c={$COMMENT.text}) "\<!--<c>--\>" ;
 
 def:
   	^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) 
+  	 {
+       HashMap<String, Number> var = initVar($ID.text);
+       var.put("x1",$p1.c1);
+       var.put("y1",$p1.c2);
+       var.put("x2",$p2.c1);
+       var.put("y2",$p2.c2);
+     }
   	 -> line(id={$ID.text},x1={$p1.c1},y1={$p1.c2},x2={$p2.c1},y2={$p2.c2},style={$style.text})
 	|	^('path' ID ^(POSITION point) style? pathelements+=pathel*) 
 	   -> path(id={$ID.text},point={$point.text},pathelements={$pathelements},style={$style.text})
 	|	^('square' ID ^(POSITION point) ^(SIDELEN expr) style?) 
+	   {
+       HashMap<String, Number> var = initVar($ID.text);
+       var.put("x",$point.c1);
+       var.put("y",$point.c2);
+       var.put("size",$expr.val);
+     }
 	   -> square(id={$ID.text},x={$point.c1},y={$point.c2},size={$expr.text},style={$style.text})
 	|	^('circle' ID ^(POSITION point) ^(RADIUS expr) style?) 
 	   {
@@ -75,13 +88,39 @@ def:
 	   }
 	   -> circle(id={$ID.text},cx={$point.c1},cy={$point.c2},r={$expr.val},style={$style.text})
 	|	^(REGULARSHAPE ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
-	   -> {$REGULARSHAPE.text.equals("rect")}? rect(id={$ID.text},x={$point.c1},y={$point.c2},width={$h.text},height={$v.text},style={$style.text}) 
+	   {
+       //System.out.println("trovato regularshape"+ $ID.text);
+       HashMap<String, Number> var = initVar($ID.text);
+       var.put("x",$point.c1);
+       var.put("y",$point.c2);
+     }
+     -> {$REGULARSHAPE.text.equals("rect")}? rect(id={$ID.text},x={$point.c1},y={$point.c2},width={$h.text},height={$v.text},style={$style.text}) 
+	   
 	   -> ellipse(id={$ID.text},cx={$point.c1},cy={$point.c2},rx={$h.text},ry={$v.text},style={$style.text})
 	|	^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getStarPath($point.c1,$point.c2,$r.text,$n.text);} 
+	   {
+       //System.out.println("trovato stella "+ $ID.text + " in " + $point.c1);
+       HashMap<String, Number> var = initVar($ID.text);
+       var.put("x",$point.c1);
+       var.put("y",$point.c2);
+     }
+     
 	   -> star(id={$ID.text},path={path},style={$style.text}) 
 	| ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getPolygonPath($point.c1,$point.c2,$r.text,$n.text);}
+	   {
+       //System.out.println("trovato polreg "+ $ID.text + " in " + $point.c1);
+       HashMap<String, Number> var = initVar($ID.text);
+       var.put("x",$point.c1);
+       var.put("y",$point.c2);
+     }
+	     
 	   -> polreg(id={$ID.text},path={path},style={$style.text})
 	|	^('container' ID ^(POSITION point) (containerrow)*)
+	   {
+       //System.out.println("trovato container "+ $ID.text);
+       HashMap<String, Number> var = initVar($ID.text);
+     }
+	
 	| ^(('style'|'nfstyle') ID styledef) -> 
 	;
 	
