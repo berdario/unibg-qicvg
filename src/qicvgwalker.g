@@ -9,6 +9,7 @@ options {
 
 @header{
   import java.util.HashMap;
+  import java.util.Vector;
 }
 
 @members{
@@ -24,26 +25,109 @@ options {
   }
   
   public static String getStarPath(int x,int y,String r,String n){
+    //per testing inserisco dei valori
+    x=0;
+    y=0;
+    int nv=new Integer(6);
     
-    return "pathritornato";
+    double radius=new Integer(100);
+    ArrayList<Double> ArrayExternal = new ArrayList<Double>();
+    ArrayList<Double> ArrayInternal = new ArrayList<Double>();
+    
+    //commento radius perché genera errore, uso un raggio arbitrario
+    //int radius=new Integer(r);
+    double angle=360/nv;
+    double initx=x+radius;
+    double inity=y;
+   
+    ArrayExternal.add(initx);
+    ArrayExternal.add(inity);
+    System.out.println("inizio il ciclo");  
+    for (int i=1;i<nv;i++)
+    {
+      //la nuova coordinata x si modifica del fattore cos dell'angolo 
+      initx=initx+radius*Math.cos(2*Math.PI/nv);
+      ArrayExternal.add(initx);
+      //la nuova coordinata y si modifica del fattore sen dell'angolo
+      inity=inity+radius*Math.sin(2*Math.PI/nv);
+      ArrayExternal.add(inity);
+        
+    }
+    //passo al calcolo dei punti interni
+    //inizializzo il primo punto, il quale sarà orientato 
+    //della meta dei gradi della corona esterna
+    //il raggio interno è proporzionale all'esterno.
+    double intradius = radius/3;
+    
+    double internalx=x+radius;
+    double internaly=y;
+    
+    //ruoto il riferimeno di angle/2
+    internalx=internalx+intradius*Math.cos(Math.PI/nv);
+    internaly=internaly+intradius*Math.sin(Math.PI/nv);
+    //e carico l'array   
+    ArrayInternal.add(internalx);
+    ArrayInternal.add(internaly);
+    
+    //ora creo i punti
+    for (int i=1;i>nv;i++)
+    {
+      //la nuova coordinata x si modifica del fattore cos dell'angolo 
+      internalx=internalx+intradius*Math.cos(2*Math.PI/nv);
+      ArrayInternal.add(internalx);
+      //la nuova coordinata y si modifica del fattore sen dell'angolo
+      internaly=internaly+intradius*Math.sin(2*Math.PI/nv);
+      ArrayInternal.add(internaly);
+    }
+    //inserisco nell'output i punti presi alternativamente dai due array
+    //inizializzo il path
+    
+    String path = "M "+Math.round(ArrayExternal.get(0))+" "+Math.round(ArrayExternal.get(1))+" ";
+    
+    for (i=2;i<ArrayExternal.size();i++)
+         {
+            path+="L "+Math.round(ArrayInternal.get(i))+" "+Math.round(ArrayInternal.get(i+1))+" ";
+            path+="L "+Math.round(ArrayExternal.get(i))+" "+Math.round(ArrayExternal.get(i+1))+" ";
+            i++;
+         } 
+    
+    System.out.println("la stella esterna ha " + ArrayExternal.size()/2 + " elementi");
+    System.out.println("la stella interna ha " + ArrayExternal.size()/2 + " elementi");
+     
+    
+   
+   
+   
+   
+    return "ddd";
   }
-  
-  public static String getPolygonPath(int x,int y,String r,String n){
+
+      
+   public static String getPolygonPath(int x,int y,String r,String n){
     int nv = new Integer(n);
     int radius = new Integer(r);
     double internalarc=0;
     if (nv == 3){
+      
       internalarc=120*Math.PI/180;
       //y+=radius;
       //radius*=2;
     } else if (nv > 3){
+      //calcolo la distanza tra 2 punti in gradi
       internalarc=(360/nv)*Math.PI/180;
     }
+      //coordinate per l'inizio del path
     double currentx = x;
     double currenty = y-radius;
+    
+      //side ???
     double side = 2*radius*Math.sin(Math.PI/nv);
+    // spostamento del path sulle coordinate iniziali
     String path = "M "+Math.round(currentx)+" "+Math.round(currenty)+" ";
+    //currentarc equivale alla metà di internalarc
     double currentarc=-internalarc/2;
+    
+    //fino a che currentarc è maggiore di -2Pi
     while(currentarc > -2*Math.PI){
       currentx-=Math.cos(currentarc)*side;
       currenty-=Math.sin(currentarc)*side;
@@ -78,7 +162,7 @@ def:
        var.put("y",$point.c2);
        var.put("size",$expr.val);
      }
-	   -> square(id={$ID.text},x={$point.c1},y={$point.c2},size={$expr.text},style={$style.text})
+	   -> square(id={$ID.text},x={$point.c1},y={$point.c2},size={$expr.val},style={$style.text})
 	|	^('circle' ID ^(POSITION point) ^(RADIUS expr) style?) 
 	   {
 	     HashMap<String, Number> var = initVar($ID.text);
@@ -89,7 +173,7 @@ def:
 	   -> circle(id={$ID.text},cx={$point.c1},cy={$point.c2},r={$expr.val},style={$style.text})
 	|	^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
-       System.out.println("trovato rect"+ $ID.text);
+       //System.out.println("trovato rect "+ $ID.text);
        HashMap<String, Number> var = initVar($ID.text);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
