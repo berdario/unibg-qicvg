@@ -29,6 +29,8 @@ tokens {
 	HORIZONTALLINE;
 	VERTICALLINE;
 	ROW;
+	SCALE;
+	ANGLE;
 }
 
 @members {
@@ -122,7 +124,7 @@ containerrow	:	innerdef COMMENT? |COMMENT ;
 
 innerdef: 
     def
-  | ID ID '(' point ',' point ')' -> ^(ID ID ^(INITPOSITION point) ^(FINALPOSITION point));
+  | ID ID '(' point (',' FLOAT (',' FLOAT)?)? ')' -> ^(ID ID ^(POSITION point) ^(SCALE FLOAT)? ^(ANGLE FLOAT)?);
 	
 style 	:	styledef
 	|	ID  ;

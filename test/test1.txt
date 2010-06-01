@@ -16,14 +16,14 @@ star stella (0,0, 7*(C2.r+2*9)/8+1 ,5, bigblu)
 line linea (0,0,5,5,emptyblue)
 container frattale (0,0)[
 line linea1 (frattale.x,frattale.y,frattale.x+1,frattale.y)
-frattale frattale1 (frattale.x+1,frattale.y,frattale.x+2,frattale.y+1)
-frattale frattale2 (frattale.x+2,frattale.y+1,frattale.x+3,frattale.y)
+frattale frattale1 (frattale.x+1,frattale.y, 0.35, 0.785714285714)
+frattale frattale2 (frattale.x+2,frattale.y+1, 0.35, 0.785714285714)
 line linea2 (frattale.x+3,frattale.y,frattale.x+4,frattale.y)
 ]
 container frattale2 (0,0)[
 line linea1 (frattale.x,frattale.y,frattale.x+1,frattale.y)
-frattale frattale1 (linea1.x2,linea1.y2,linea1.x2+1,linea1.y2+1)
-frattale frattale2 (frattale1.x2,frattale1.y2,frattale1.x2+1,frattale1.y2-1)
+frattale frattale1 (linea1.x2,linea1.y2, 0.35, 0.785714285714)
+frattale frattale2 (frattale1.x2,frattale1.y2, 0.35, 0.785714285714)
 line linea2 (frattale2.x2,frattale2.y2,frattale2.x2+1,frattale2.y2)
 ]
 container frattale3 (0,0)[]

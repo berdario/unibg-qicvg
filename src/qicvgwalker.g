@@ -102,7 +102,7 @@ options {
 
       
    public static String getPolygonPath(double x, double y, double radius, Number n){
-    int nv = n.intValue(); //TODO sarebbe meglio evitare arrotondamenti
+    int nv = n.intValue(); //TODO avoid rounding
     double internalarc=0;
     if (nv == 3){
       
@@ -110,22 +110,22 @@ options {
       //y+=radius;
       //radius*=2;
     } else if (nv > 3){
-      //calcolo la distanza tra 2 punti in gradi
+      //calculate polygon's internal angle
       internalarc=(360/nv)*Math.PI/180;
     }
-      //coordinate per l'inizio del path
+    
     double currentx = x;
     double currenty = y-radius;
     
-      //side ???
+    //calculate side length
     double side = 2*radius*Math.sin(Math.PI/nv);
-    // spostamento del path sulle coordinate iniziali
+    
+    //setting path's initial coords
     String path = "M "+Math.round(currentx)+" "+Math.round(currenty)+" ";
-    //currentarc equivale alla metà di internalarc
+    
     double currentarc=-internalarc/2;
     
-    //fino a che currentarc è maggiore di -2Pi
-    while(currentarc > -2*Math.PI){
+    while(currentarc > -2 * Math.PI){
       currentx-=Math.cos(currentarc)*side;
       currenty-=Math.sin(currentarc)*side;
       path+="L "+Math.round(currentx)+" "+Math.round(currenty)+" ";
@@ -218,7 +218,7 @@ containerrow	:	^(ROW innerdef comment?)| ^(ROW comment);
 
 innerdef:
     def	
-  | ^(ID ID ^(INITPOSITION point) ^(FINALPOSITION point));
+  | ^(ID ID ^(POSITION point) ^(SCALE FLOAT) ^(ANGLE FLOAT));
 	
 style	:	styledef | ID;
 
