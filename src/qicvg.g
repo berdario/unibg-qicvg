@@ -97,7 +97,7 @@ UNICODE_ESC
     ;
     
 IDATTRIB  
-	:	('x'|'y'|'x2'|'y2'|'dim1'|'dim2'|'nvert'|'r'|'cx'|'cy')
+	:	('x'|'y'|'x2'|'y2'|'height'|'width'|'nvert'|'r'|'cx'|'cy'|'rx'|'ry')
 	;
 
 COLORNAME

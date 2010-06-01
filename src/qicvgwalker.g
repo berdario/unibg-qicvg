@@ -9,7 +9,6 @@ options {
 
 @header{
   import java.util.HashMap;
-  import java.util.Vector;
 }
 
 @members{
@@ -24,13 +23,13 @@ options {
        return var;
   }
   
-  public static String getStarPath(int x,int y,String r,String n){
+  public static String getStarPath(double x,double y,double radius,Number n){
     //per testing inserisco dei valori
     x=0;
     y=0;
     int nv=new Integer(6);
     
-    double radius=new Integer(100);
+    radius=new Integer(100);
     ArrayList<Double> ArrayExternal = new ArrayList<Double>();
     ArrayList<Double> ArrayInternal = new ArrayList<Double>();
     
@@ -102,9 +101,8 @@ options {
   }
 
       
-   public static String getPolygonPath(int x,int y,String r,String n){
-    int nv = new Integer(n);
-    int radius = new Integer(r);
+   public static String getPolygonPath(double x, double y, double radius, Number n){
+    int nv = n.intValue(); //TODO sarebbe meglio evitare arrotondamenti
     double internalarc=0;
     if (nv == 3){
       
@@ -172,7 +170,6 @@ def:
 	   -> circle(id={$ID.text},cx={$point.c1},cy={$point.c2},r={$expr.val},style={$style.text})
 	|	^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
-       //System.out.println("trovato rect "+ $ID.text);
        HashMap<String, Number> var = initVar($ID.text);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
@@ -189,27 +186,28 @@ def:
        var.put("ry",$v.val); 
 	   }   
 	   -> ellipse(id={$ID.text},cx={$point.c1},cy={$point.c2},rx={$h.val},ry={$v.val},style={$style.text})
-	|	^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getStarPath($point.c1,$point.c2,$r.text,$n.text);} 
+	|	^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getStarPath($point.c1,$point.c2,$r.val,$n.val);} 
 	   {
-       //System.out.println("trovato stella "+ $ID.text + " in " + $point.c1);
        HashMap<String, Number> var = initVar($ID.text);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
+       var.put("r",$r.val);
+       var.put("nvert",$n.val);
      }
      
 	   -> star(id={$ID.text},path={path},style={$style.text}) 
-	| ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getPolygonPath($point.c1,$point.c2,$r.text,$n.text);}
+	| ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getPolygonPath($point.c1,$point.c2,$r.val,$n.val);}
 	   {
-       //System.out.println("trovato polreg "+ $ID.text + " in " + $point.c1);
        HashMap<String, Number> var = initVar($ID.text);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
+       var.put("r",$r.val);
+       var.put("nvert",$n.val);
      }
 	     
 	   -> polreg(id={$ID.text},path={path},style={$style.text})
 	|	^('container' ID ^(POSITION point) (containerrow)*)
 	   {
-       //System.out.println("trovato container "+ $ID.text);
        HashMap<String, Number> var = initVar($ID.text);
      }
 	
@@ -233,8 +231,8 @@ point returns [int c1, int c2]	:	expr1=expr expr2=expr { try{$c1=$expr1.val.intV
 pathel	:	^(MOVETO ^(POSITION point)) -> template(p={$point.text}) "M <p> "
 	|	^(LINETO ^(POSITION point)) -> template(p={$point.text}) "L <p> "
 	|	CLOSE -> template() "Z"
-	|	^(HORIZONTALLINE expr) -> template(c={$expr.text}) "H <c> "
-	|	^(VERTICALLINE expr) -> template(c={$expr.text}) "V <c> "
+	|	^(HORIZONTALLINE expr) -> template(c={$expr.val}) "H <c> "
+	|	^(VERTICALLINE expr) -> template(c={$expr.val}) "V <c> "
 	|	^(BEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ^(CONTROLPOINT p3=point) ) -> template(p1={$p1.text},p2={$p2.text},p3={$p3.text}) "C <p1> <p2> <p3> " 
 	|	^(SHORTHANDBEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ) -> template(p1={$p1.text},p2={$p2.text}) "S <p1> <p2> "
 	|	^(SHORTHANDQUADRATICBEZIER ^(CONTROLPOINT points+=point) (^(CONTROLPOINT points+=point))* ) -> template(points={$points}) "T <points>"
