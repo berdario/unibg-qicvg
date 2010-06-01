@@ -70,7 +70,7 @@ options {
     ArrayInternal.add(internaly);
     
     //ora creo i punti
-    for (int i=1;i>nv;i++)
+    for (int i=1;i<nv;i++)
     {
       //la nuova coordinata x si modifica del fattore cos dell'angolo 
       internalx=internalx+intradius*Math.cos(2*Math.PI/nv);
@@ -84,8 +84,7 @@ options {
     
     String path = "M "+Math.round(ArrayExternal.get(0))+" "+Math.round(ArrayExternal.get(1))+" ";
     
-    for (i=2;i<ArrayExternal.size();i++)
-         {
+    for (int i=2;i<ArrayExternal.size();i++) {
             path+="L "+Math.round(ArrayInternal.get(i))+" "+Math.round(ArrayInternal.get(i+1))+" ";
             path+="L "+Math.round(ArrayExternal.get(i))+" "+Math.round(ArrayExternal.get(i+1))+" ";
             i++;
