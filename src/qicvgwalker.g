@@ -24,12 +24,11 @@ options {
   }
   
   public static String getStarPath(double x,double y,double radius,Number n){
-    //per testing inserisco dei valori
-    x=0;
-    y=0;
-    int nv=new Integer(6);
+   
+   
+   //per testing inserisco dei valori
     
-    radius=new Integer(100);
+    int nv = n.intValue();
     ArrayList<Double> ArrayExternal = new ArrayList<Double>();
     ArrayList<Double> ArrayInternal = new ArrayList<Double>();
     
@@ -56,7 +55,7 @@ options {
     //inizializzo il primo punto, il quale sarà orientato 
     //della meta dei gradi della corona esterna
     //il raggio interno è proporzionale all'esterno.
-    double intradius = radius/3;
+    double intradius = radius/4;
     //System.out.println("inizio il ciclo");  
     for (int i=0;i<nv;i++)
     {
@@ -78,16 +77,11 @@ options {
            path+="L "+Math.round(ArrayInternal.get(i))+" "+Math.round(ArrayInternal.get(i+1))+" ";
            i++;
          } 
-    System.out.println(path);
-    System.out.println("la stella esterna ha " + ArrayExternal.size()/2 + " elementi");
-    System.out.println("la stella interna ha " + ArrayExternal.size()/2 + " elementi");
-     
-    
-   
-   
-   
-   
-    return "ddd";
+    path += "Z";
+    //System.out.println(path);
+    //System.out.println("la stella esterna ha " + ArrayExternal.size()/2 + " elementi");
+    //System.out.println("la stella interna ha " + ArrayExternal.size()/2 + " elementi");
+    return path;
   }
 
       
