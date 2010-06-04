@@ -25,10 +25,10 @@ public class ExampleRunner {
 	 */
 	public static void main(String[] args) throws IOException, RecognitionException {
 		qicvgLexer lex = new qicvgLexer(new ANTLRFileStream("test"+File.separator+"test1.txt","UTF8"));
-		TokenRewriteStream tokens = new TokenRewriteStream(lex);
+		CommonTokenStream tokens = new CommonTokenStream(lex);
 		qicvgParser parser = new qicvgParser(tokens);
 		
-		parser.setTreeAdaptor(new CommonTreeAdaptor());
+		//parser.setTreeAdaptor(new CommonTreeAdaptor());
 		qicvgParser.prog_return ret = parser.prog();
 		CommonTree tree = (CommonTree) ret.getTree();
 		if (ret.tree != null) { // needed when the input is empty
@@ -44,8 +44,9 @@ public class ExampleRunner {
 			templateFile.close();
 			walker.setTemplateLib(templates);
 			
-			walker.prog();
-			System.out.println("\n"+tokens.toString());
+			qicvgwalker.prog_return output = walker.prog();
+			System.out.println("output: "+output.getTemplate());
+			//System.out.println("\n"+tokens.toString());
 			
 		}
 

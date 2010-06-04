@@ -4,7 +4,6 @@ options {
     tokenVocab=qicvg ; // reuse token types
     ASTLabelType=CommonTree; // $label will have type CommonTree
     output=template;
-    rewrite=true;
 }
 
 @header{
@@ -275,7 +274,7 @@ term returns [Double val]:	^('*' t1=term t2=term) {$val=$t1.val*$t2.val;}
 atom returns [Double val] :
   	signedint 
   	{
-      $val = Double.parseDouble($signedint.text);
+      $val = Double.parseDouble($signedint.st.toString());
   	}
   | ^(MATH expr)
     {
