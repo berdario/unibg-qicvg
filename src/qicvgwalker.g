@@ -35,21 +35,21 @@ options {
     
     //commento radius perché genera errore, uso un raggio arbitrario
     //int radius=new Integer(r);
-    double angle=360/nv;
-    double initx=x+radius;
+    
+    double initx=x;
     double inity=y;
-   
-    ArrayExternal.add(initx);
-    ArrayExternal.add(inity);
-    System.out.println("inizio il ciclo");  
-    for (int i=1;i<nv;i++)
+    double coordx;
+    double coordy;
+    
+    //System.out.println("inizio il ciclo");  
+    for (int i=0;i<nv;i++)
     {
       //la nuova coordinata x si modifica del fattore cos dell'angolo 
-      initx=initx+radius*Math.cos(2*Math.PI/nv);
-      ArrayExternal.add(initx);
+      coordx=initx+radius*Math.cos((2*Math.PI/nv)*i);
+      ArrayExternal.add(coordx);
       //la nuova coordinata y si modifica del fattore sen dell'angolo
-      inity=inity+radius*Math.sin(2*Math.PI/nv);
-      ArrayExternal.add(inity);
+      coordy=inity+radius*Math.sin((2*Math.PI/nv)*i);
+      ArrayExternal.add(coordy);
         
     }
     //passo al calcolo dei punti interni
@@ -57,38 +57,28 @@ options {
     //della meta dei gradi della corona esterna
     //il raggio interno è proporzionale all'esterno.
     double intradius = radius/3;
-    
-    double internalx=x+radius;
-    double internaly=y;
-    
-    //ruoto il riferimeno di angle/2
-    internalx=internalx+intradius*Math.cos(Math.PI/nv);
-    internaly=internaly+intradius*Math.sin(Math.PI/nv);
-    //e carico l'array   
-    ArrayInternal.add(internalx);
-    ArrayInternal.add(internaly);
-    
-    //ora creo i punti
-    for (int i=1;i<nv;i++)
+    //System.out.println("inizio il ciclo");  
+    for (int i=0;i<nv;i++)
     {
       //la nuova coordinata x si modifica del fattore cos dell'angolo 
-      internalx=internalx+intradius*Math.cos(2*Math.PI/nv);
-      ArrayInternal.add(internalx);
+      coordx=initx+intradius*Math.cos(((2*Math.PI/nv)*i)+Math.PI/nv);
+      ArrayInternal.add(coordx);
       //la nuova coordinata y si modifica del fattore sen dell'angolo
-      internaly=internaly+intradius*Math.sin(2*Math.PI/nv);
-      ArrayInternal.add(internaly);
+      coordy=inity+intradius*Math.sin(((2*Math.PI/nv)*i)+Math.PI/nv);
+      ArrayInternal.add(coordy);
+        
     }
     //inserisco nell'output i punti presi alternativamente dai due array
     //inizializzo il path
     
     String path = "M "+Math.round(ArrayExternal.get(0))+" "+Math.round(ArrayExternal.get(1))+" ";
-    
+            path+="L "+Math.round(ArrayInternal.get(0))+" "+Math.round(ArrayInternal.get(1))+" ";
     for (int i=2;i<ArrayExternal.size();i++) {
-            path+="L "+Math.round(ArrayInternal.get(i))+" "+Math.round(ArrayInternal.get(i+1))+" ";
-            path+="L "+Math.round(ArrayExternal.get(i))+" "+Math.round(ArrayExternal.get(i+1))+" ";
-            i++;
+           path+="L "+Math.round(ArrayExternal.get(i))+" "+Math.round(ArrayExternal.get(i+1))+" ";
+           path+="L "+Math.round(ArrayInternal.get(i))+" "+Math.round(ArrayInternal.get(i+1))+" ";
+           i++;
          } 
-    
+    System.out.println(path);
     System.out.println("la stella esterna ha " + ArrayExternal.size()/2 + " elementi");
     System.out.println("la stella interna ha " + ArrayExternal.size()/2 + " elementi");
      
