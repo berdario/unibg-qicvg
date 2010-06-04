@@ -13,7 +13,8 @@ options {
 
 @members{
   HashMap<String,HashMap<String,Number>> vars = new HashMap<String,HashMap<String,Number>>(); 
-
+  HashMap<String,HashMap<String,Object>> containerDefs = new HashMap<String,HashMap<String,Object>>(); 
+  
   HashMap<String,Number> initVar(String id){
        if (vars.get(id) != null) {
          //TODO throw eccezione
@@ -21,6 +22,15 @@ options {
        HashMap<String, Number> var = new HashMap<String, Number>();
        vars.put(id,var);
        return var;
+  }
+  
+  HashMap<String,Object> initContainer(String id){
+       if (vars.get(id) != null) {
+         //TODO throw eccezione
+       }
+       HashMap<String, Object> container = new HashMap<String, Object>();
+       containerDefs.put(id,container);
+       return container;
   }
   
   public static String getStarPath(double x,double y,double radius,Number n){
@@ -140,10 +150,11 @@ prog 	:	(^(ROW def comment?) | ^(ROW comment))*;
 
 comment: COMMENT -> template(c={$COMMENT.text}) "\<!--<c>--\>" ;
 
-def:
+def returns [String id]:
   	^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) 
   	 {
-       HashMap<String, Number> var = initVar($ID.text);
+  	   $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
        var.put("x1",$p1.c1);
        var.put("y1",$p1.c2);
        var.put("x2",$p2.c1);
@@ -154,7 +165,8 @@ def:
 	   -> path(id={$ID.text},point={$point.text},pathelements={$pathelements},style={$style.text})
 	|	^('square' ID ^(POSITION point) ^(SIDELEN expr) style?) 
 	   {
-       HashMap<String, Number> var = initVar($ID.text);
+       $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("size",$expr.val);
@@ -162,7 +174,8 @@ def:
 	   -> square(id={$ID.text},x={$point.c1},y={$point.c2},size={$expr.val},style={$style.text})
 	|	^('circle' ID ^(POSITION point) ^(RADIUS expr) style?) 
 	   {
-	     HashMap<String, Number> var = initVar($ID.text);
+	     $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
 	     var.put("cx",$point.c1);
 	     var.put("cy",$point.c2);
 	     var.put("r",$expr.val);
@@ -170,7 +183,8 @@ def:
 	   -> circle(id={$ID.text},cx={$point.c1},cy={$point.c2},r={$expr.val},style={$style.text})
 	|	^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
-       HashMap<String, Number> var = initVar($ID.text);
+       $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("height",$v.val);
@@ -179,7 +193,8 @@ def:
      -> rect(id={$ID.text},x={$point.c1},y={$point.c2},width={$h.val},height={$v.val},style={$style.text}) 
 	|  ^('ellipse' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
-       HashMap<String, Number> var = initVar($ID.text);
+       $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
        var.put("cx",$point.c1);
        var.put("cy",$point.c2);
        var.put("rx",$h.val);
@@ -188,7 +203,8 @@ def:
 	   -> ellipse(id={$ID.text},cx={$point.c1},cy={$point.c2},rx={$h.val},ry={$v.val},style={$style.text})
 	|	^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getStarPath($point.c1,$point.c2,$r.val,$n.val);} 
 	   {
-       HashMap<String, Number> var = initVar($ID.text);
+       $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("r",$r.val);
@@ -198,7 +214,8 @@ def:
 	   -> star(id={$ID.text},path={path},style={$style.text}) 
 	| ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getPolygonPath($point.c1,$point.c2,$r.val,$n.val);}
 	   {
-       HashMap<String, Number> var = initVar($ID.text);
+       $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("r",$r.val);
@@ -206,18 +223,22 @@ def:
      }
 	     
 	   -> polreg(id={$ID.text},path={path},style={$style.text})
-	|	^('container' ID ^(POSITION point) (containerrow)*)
+	|	^('container' ID ^(POSITION point) (containerdefs+=containerrow)*)
 	   {
-       HashMap<String, Number> var = initVar($ID.text);
+       $id=$ID.text;
+       HashMap<String, Number> var = initVar($id);
+       var.put("x",$point.c1);
+       var.put("y",$point.c2);
+       HashMap<String, Object> c = initContainer($id);
+       System.out.println($containerdefs);
      }
-	
 	| ^(('style'|'nfstyle') ID styledef) -> 
 	;
 	
-containerrow	:	^(ROW innerdef comment?)| ^(ROW comment);
+containerrow :	^(ROW innerdef comment?) | ^(ROW comment);
 
-innerdef:
-    def	
+innerdef returns [String id]:
+    def {$id=$def.id;}
   | ^(ID ID ^(POSITION point) ^(SCALE FLOAT) ^(ANGLE FLOAT));
 	
 style	:	styledef | ID;
