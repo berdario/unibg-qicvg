@@ -131,7 +131,7 @@ innerdef:
 style 	:	styledef
 	|	ID  ;
 	
-styledef:	(color?','color?','INT?) -> ^(STYLE ^(FILLCOLOR color)? ^(BORDERCOLOR color)? ^(BORDERWIDTH INT)?);
+styledef:	(c1=color?','c2=color?','INT?) -> ^(STYLE ^(FILLCOLOR $c1)? ^(BORDERCOLOR $c2)? ^(BORDERWIDTH INT)?);
 
 nfstyle	:	nfstyledef
 	|	ID;
@@ -152,7 +152,7 @@ pathel	:	'M''('point')' -> ^(MOVETO ^(POSITION point))
 	|	'Q('point(','point)+')' -> ^(QUADRATICBEZIER ^(CONTROLPOINT point) ^(CONTROLPOINT point)+ )
 	;
 
-color	:	COLORNAME|HEXNUMBER;
+color	: COLORNAME | HEXNUMBER;
 
 math	:	term(('+'|'-')^term)* ;
 

@@ -13,6 +13,7 @@ options {
 @members{
   HashMap<String,HashMap<String,Number>> vars = new HashMap<String,HashMap<String,Number>>(); 
   HashMap<String,HashMap<String,Object>> containerDefs = new HashMap<String,HashMap<String,Object>>(); 
+  HashMap<String, Style> styles = new HashMap<String, Style>(); 
   
   HashMap<String,Number> initVar(String id){
        if (vars.get(id) != null) {
@@ -25,12 +26,21 @@ options {
   }
   
   HashMap<String,Object> initContainer(String id){
-       if (vars.get(id) != null) {
+       if (containerDefs.get(id) != null) {
          //TODO throw eccezione
        }
        HashMap<String, Object> container = new HashMap<String, Object>();
        containerDefs.put(id,container);
        return container;
+  }
+  
+  Style initStyle(String id, String fillcolor, String bordercolor, int borderwidth){
+      if (styles.get(id) != null){
+         //TODO throw eccezione
+      }
+      Style s = this.new Style(fillcolor, bordercolor, borderwidth);
+      styles.put(id,s);
+      return s;
   }
   
   public static String getStarPath(double x,double y,double radius,Number n){
@@ -128,6 +138,16 @@ options {
     path+="Z";
     return path;
   }
+  
+  class Style{
+    String fillcolor, bordercolor;
+    int borderwidth;
+    public Style(String fillcolor, String bordercolor, int borderwidth) {
+      this.fillcolor = fillcolor;
+      this.bordercolor = bordercolor;
+      this.borderwidth = borderwidth;
+    }
+  }
 }
 
 prog 	:	(rows+=row)* -> svgfile(rows={$rows});
@@ -224,7 +244,11 @@ def returns [String id]:
        HashMap<String, Object> c = initContainer($id);
        System.out.println($containerdefs);
      } -> template() "TODO container"
-	| ^(('style'|'nfstyle') ID styledef) -> template() "" 
+	| ^(('style'|'nfstyle') ID styledef)
+	  {
+	     $id=$ID.text;
+       initStyle($id,$styledef.fillcolor,$styledef.bordercolor,$styledef.borderwidth);
+	  } -> template() "" 
 	;
 	
 containerrow :	^(ROW innerdef comment?) | ^(ROW comment);
@@ -239,9 +263,25 @@ innerdef returns [String id]:
     }
   ;
 	
-style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"| ID;
+style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"
+      | ID 
+      {
+        Style s = styles.get($ID.text);
+      } ->  styledef(color={s.fillcolor},bordercolor={s.bordercolor},width={s.borderwidth})
+      ;
 
-styledef 	:	^(STYLE (^(FILLCOLOR fc=color))? (^(BORDERCOLOR bc=color))? (^(BORDERWIDTH INT))?) -> styledef(color={$fc.text},bordercolor={$bc.text},width={$INT.text}) ;
+styledef returns [String fillcolor, String bordercolor, int borderwidth]	
+    :	^(STYLE (^(FILLCOLOR fc=color))? (^(BORDERCOLOR bc=color))? (^(BORDERWIDTH INT))?)
+    {
+        $fillcolor = $fc.text;
+        $bordercolor = $bc.text;
+        try{
+          $borderwidth = new Integer($INT.text);
+        } catch(NumberFormatException e){
+          //it's fine to leave borderwidth undeclared 
+        }
+    }
+    -> styledef(color={$fc.text},bordercolor={$bc.text},width={$INT.text}) ;
 	
 point returns [int c1, int c2]	:	expr1=expr expr2=expr { try{$c1=$expr1.val.intValue(); $c2=$expr2.val.intValue();}catch(NumberFormatException e){}} 
 -> template(c1={$expr1.val.intValue()},c2={$expr2.val.intValue()}) "<c1> <c2> "
