@@ -45,7 +45,7 @@ public class ExampleRunner {
 			walker.setTemplateLib(templates);
 			
 			qicvgwalker.prog_return output = walker.prog();
-			System.out.println("output: "+output.getTemplate());
+			System.out.println("output:\n"+output.getTemplate());
 			//System.out.println("\n"+tokens.toString());
 			
 		}

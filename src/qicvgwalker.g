@@ -16,7 +16,7 @@ options {
   
   HashMap<String,Number> initVar(String id){
        if (vars.get(id) != null) {
-         System.out.println("id trovato");//recuperare riga
+         System.out.println("id trovato: "+id);//TODO recuperare riga
          
        }
        HashMap<String, Number> var = new HashMap<String, Number>();
@@ -130,7 +130,9 @@ options {
   }
 }
 
-prog 	:	(^(ROW def comment?) | ^(ROW comment))*;
+prog 	:	(rows+=row)* -> svgfile(rows={$rows});
+
+row   : ^(ROW def comment?) -> row(def={$def.st},comment={$comment.st}) | ^(ROW comment) -> row(comment={$comment.st}); 
 
 comment: COMMENT -> template(c={$COMMENT.text}) "\<!--<c>--\>" ;
 
@@ -144,9 +146,9 @@ def returns [String id]:
        var.put("x2",$p2.c1);
        var.put("y2",$p2.c2);
      }
-  	 -> line(id={$ID.text},x1={$p1.c1},y1={$p1.c2},x2={$p2.c1},y2={$p2.c2},style={$style.text})
+  	 -> line(id={$ID.text},x1={$p1.c1},y1={$p1.c2},x2={$p2.c1},y2={$p2.c2},style={$style.st})
 	|	^('path' ID ^(POSITION point) style? pathelements+=pathel*) 
-	   -> path(id={$ID.text},point={$point.text},pathelements={$pathelements},style={$style.text})
+	   -> path(id={$ID.text},point={$point.st},pathelements={$pathelements},style={$style.st})
 	|	^('square' ID ^(POSITION point) ^(SIDELEN expr) style?) 
 	   {
        $id=$ID.text;
@@ -155,7 +157,7 @@ def returns [String id]:
        var.put("y",$point.c2);
        var.put("size",$expr.val);
      }
-	   -> square(id={$ID.text},x={$point.c1},y={$point.c2},size={$expr.val},style={$style.text})
+	   -> square(id={$ID.text},x={$point.c1},y={$point.c2},size={$expr.val},style={$style.st})
 	|	^('circle' ID ^(POSITION point) ^(RADIUS expr) style?) 
 	   {
 	     $id=$ID.text;
@@ -164,7 +166,7 @@ def returns [String id]:
 	     var.put("cy",$point.c2);
 	     var.put("r",$expr.val);
 	   }
-	   -> circle(id={$ID.text},cx={$point.c1},cy={$point.c2},r={$expr.val},style={$style.text})
+	   -> circle(id={$ID.text},cx={$point.c1},cy={$point.c2},r={$expr.val},style={$style.st})
 	|	^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
        $id=$ID.text;
@@ -174,7 +176,7 @@ def returns [String id]:
        var.put("height",$v.val);
        var.put("width",$h.val);
      }
-     -> rect(id={$ID.text},x={$point.c1},y={$point.c2},width={$h.val},height={$v.val},style={$style.text}) 
+     -> rect(id={$ID.text},x={$point.c1},y={$point.c2},width={$h.val},height={$v.val},style={$style.st}) 
 	|  ^('ellipse' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
        $id=$ID.text;
@@ -184,7 +186,7 @@ def returns [String id]:
        var.put("rx",$h.val);
        var.put("ry",$v.val); 
 	   }   
-	   -> ellipse(id={$ID.text},cx={$point.c1},cy={$point.c2},rx={$h.val},ry={$v.val},style={$style.text})
+	   -> ellipse(id={$ID.text},cx={$point.c1},cy={$point.c2},rx={$h.val},ry={$v.val},style={$style.st})
 	|	^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getStarPath($point.c1,$point.c2,$r.val,$n.val);} 
 	   {
        $id=$ID.text;
@@ -195,7 +197,7 @@ def returns [String id]:
        var.put("nvert",$n.val);
      }
      
-	   -> star(id={$ID.text},path={path},style={$style.text}) 
+	   -> star(id={$ID.text},path={path},style={$style.st}) 
 	| ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getPolygonPath($point.c1,$point.c2,$r.val,$n.val);}
 	   {
        $id=$ID.text;
@@ -206,7 +208,7 @@ def returns [String id]:
        var.put("nvert",$n.val);
      }
 	     
-	   -> polreg(id={$ID.text},path={path},style={$style.text})
+	   -> polreg(id={$ID.text},path={path},style={$style.st})
 	|	^('container' ID ^(POSITION point) (containerdefs+=containerrow)*)
 	   {
        $id=$ID.text;
@@ -215,8 +217,8 @@ def returns [String id]:
        var.put("y",$point.c2);
        HashMap<String, Object> c = initContainer($id);
        System.out.println($containerdefs);
-     }
-	| ^(('style'|'nfstyle') ID styledef) -> 
+     } -> template() "TODO container"
+	| ^(('style'|'nfstyle') ID styledef) -> template() "" 
 	;
 	
 containerrow :	^(ROW innerdef comment?) | ^(ROW comment);
@@ -225,7 +227,7 @@ innerdef returns [String id]:
     def {$id=$def.id;}
   | ^(ID ID ^(POSITION point) ^(SCALE FLOAT) ^(ANGLE FLOAT));
 	
-style	:	styledef | ID;
+style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"| ID;
 
 styledef 	:	^(STYLE (^(FILLCOLOR fc=color))? (^(BORDERCOLOR bc=color))? (^(BORDERWIDTH INT))?) -> styledef(color={$fc.text},bordercolor={$bc.text},width={$INT.text}) ;
 	
@@ -233,13 +235,13 @@ point returns [int c1, int c2]	:	expr1=expr expr2=expr { try{$c1=$expr1.val.intV
 -> template(c1={$expr1.val.intValue()},c2={$expr2.val.intValue()}) "<c1> <c2> "
 ;
 
-pathel	:	^(MOVETO ^(POSITION point)) -> template(p={$point.text}) "M <p> "
-	|	^(LINETO ^(POSITION point)) -> template(p={$point.text}) "L <p> "
+pathel	:	^(MOVETO ^(POSITION point)) -> template(p={$point.st}) "M <p> "
+	|	^(LINETO ^(POSITION point)) -> template(p={$point.st}) "L <p> "
 	|	CLOSE -> template() "Z"
 	|	^(HORIZONTALLINE expr) -> template(c={$expr.val}) "H <c> "
 	|	^(VERTICALLINE expr) -> template(c={$expr.val}) "V <c> "
-	|	^(BEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ^(CONTROLPOINT p3=point) ) -> template(p1={$p1.text},p2={$p2.text},p3={$p3.text}) "C <p1> <p2> <p3> " 
-	|	^(SHORTHANDBEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ) -> template(p1={$p1.text},p2={$p2.text}) "S <p1> <p2> "
+	|	^(BEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ^(CONTROLPOINT p3=point) ) -> template(p1={$p1.st},p2={$p2.st},p3={$p3.st}) "C <p1> <p2> <p3> " 
+	|	^(SHORTHANDBEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ) -> template(p1={$p1.st},p2={$p2.st}) "S <p1> <p2> "
 	|	^(SHORTHANDQUADRATICBEZIER ^(CONTROLPOINT points+=point) (^(CONTROLPOINT points+=point))* ) -> template(points={$points}) "T <points>"
 	|	^(QUADRATICBEZIER ^(CONTROLPOINT points+=point) (^(CONTROLPOINT points+=point))+ ) -> template(points={$points}) "T <points>"
 	;
