@@ -209,12 +209,18 @@ def returns [String id]:
      }
 	     
 	   -> polreg(id={$ID.text},path={path},style={$style.st})
-	|	^('container' ID ^(POSITION point) (containerdefs+=containerrow)*)
+	|	^('container' 
+	   (
+	     ID ^(POSITION point) 
+	     {
+          $id=$ID.text;
+          HashMap<String, Number> var = initVar($id);
+          var.put("x",$point.c1);
+          var.put("y",$point.c2);
+	     } 
+	   ) 
+	   (containerdefs+=containerrow)*)
 	   {
-       $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
-       var.put("x",$point.c1);
-       var.put("y",$point.c2);
        HashMap<String, Object> c = initContainer($id);
        System.out.println($containerdefs);
      } -> template() "TODO container"
@@ -225,7 +231,13 @@ containerrow :	^(ROW innerdef comment?) | ^(ROW comment);
 
 innerdef returns [String id]:
     def {$id=$def.id;}
-  | ^(ID ID ^(POSITION point) ^(SCALE FLOAT) ^(ANGLE FLOAT));
+  | ^(ID thisid=ID ^(POSITION point) ^(SCALE FLOAT) ^(ANGLE FLOAT))
+    {
+      HashMap<String, Number> var = initVar($thisid.text);
+      var.put("x",$point.c1);
+      var.put("y",$point.c2);
+    }
+  ;
 	
 style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"| ID;
 
@@ -273,7 +285,8 @@ atom returns [Double val] :
       try{
          $val = vars.get($ID.text).get($IDATTRIB.text).doubleValue();
       } catch(Exception e){
-        //e.printStackTrace();
+        System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
+        e.printStackTrace();
       }
     }
   ;
