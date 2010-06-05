@@ -31,6 +31,7 @@ tokens {
 	ROW;
 	SCALE;
 	ANGLE;
+	COMMENT;
 }
 
 @members {
@@ -59,7 +60,7 @@ FLOAT
     |   ('0'..'9')+ EXPONENT
     ;
 
-COMMENT
+COMMENTTEXT
     :   '//' ~('\n'|'\r')* 
     ;
 
@@ -105,7 +106,9 @@ IDATTRIB
 COLORNAME
 	:	'orange'|'blue'|'aqua'| 'black'| 'fuchsia'| 'gray'| 'green'| 'lime'| 'maroon'| 'navy'| 'olive'| 'purple'| 'red'| 'silver'|' teal'|' white'| 'yellow';
 
-row 	:	def COMMENT? |COMMENT ;	
+row 	:	def comment? | comment;
+      
+comment : COMMENTTEXT -> ^(COMMENT {new CommonTree(new CommonToken(COMMENTTEXT,$COMMENTTEXT.text.substring(2)))});
 
 def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) nfstyle?)
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
@@ -119,7 +122,7 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSI
 	| 'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef)
 	;
 	
-containerrow	:	innerdef COMMENT? |COMMENT ;
+containerrow	:	innerdef comment? | comment;
 
 innerdef: 
     def
@@ -163,5 +166,3 @@ atom	:	('+'|'-')?INT
 
 ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
 		;
-
-

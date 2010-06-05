@@ -134,7 +134,7 @@ prog 	:	(rows+=row)* -> svgfile(rows={$rows});
 
 row   : ^(ROW def comment?) -> row(def={$def.st},comment={$comment.st}) | ^(ROW comment) -> row(comment={$comment.st}); 
 
-comment: COMMENT -> template(c={$COMMENT.text}) "\<!--<c>--\>" ;
+comment: ^(COMMENT COMMENTTEXT) -> template(c={$COMMENTTEXT.text}) "\<!--<c>--\>" ;
 
 def returns [String id]:
   	^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) 
