@@ -12,7 +12,7 @@ nfstyle emptyblue (blue,8)
 path pluto (20,30,#FFF,blue,3).T(1,400,600,200,800,600)
 path paperino (40,40).H(-100).V(-100).M(110,110).L(30,30)
 polreg poligono (100,100,10,5)
-star stella (300,300, 200 ,8, bigblu)
+star stella (500,500,250,200, bigblu)
 line linea (0,0,5,5,emptyblue)
 container frattale (0,0)[
 line linea1 (frattale.x,frattale.y,frattale.x+1,frattale.y)
@@ -27,6 +27,7 @@ frattale frattale2 (frattale1.x2,frattale1.y2, 0.35, 0.785714285714)
 line linea2 (frattale2.x2,frattale2.y2,frattale2.x2+1,frattale2.y2)
 ]
 container frattale3 (0,0)[]
+rect R2 (100, 100, 5, 10)
 
 
 

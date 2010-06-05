@@ -16,7 +16,8 @@ options {
 
   HashMap<String,Number> initVar(String id){
        if (vars.get(id) != null) {
-         //TODO throw eccezione
+         System.out.println("id trovato");//recuperare riga
+         
        }
        HashMap<String, Number> var = new HashMap<String, Number>();
        vars.put(id,var);

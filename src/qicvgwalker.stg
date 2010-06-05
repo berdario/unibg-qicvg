@@ -5,7 +5,7 @@ square(id,x,y,size,style) ::= "\<rect id=\"<id>\" x=\"<x>\" y=\"<y>\" width=\"<s
 circle(id,cx,cy,r,style) ::= "\<circle id=\"<id>\" cx=\"<cx>\" cy=\"<cy>\" r=\"<r>\" <style> /\>"
 rect(id,x,y,width,height,style) ::= "\<rect id=\"<id>\" x=\"<x>\" y=\"<y>\" width=\"<width>\" height=\"<height>\" <style> /\>"
 ellipse(id,cx,cy,rx,ry,style) ::= "\<ellipse id=\"<id>\" cx=\"<cx>\" cy=\"<cy>\" rx=\"<rx>\" ry=\"<ry>\" <style> /\>"
-star(id,path,style) ::= "star <path>"
+star(id,path,style) ::= "\<path id=\"<id>\" d=\"<path>\" <style> /\>"
 polreg(id,path,style) ::= "\<path id=\"<id>\" d=\"<path>\" <style> /\>"
 fillcolor(color) ::= "<if(color)>fill:<color>;<endif>"
 strokecolor(color) ::= "<if(color)>stroke:<color>;<endif>"
