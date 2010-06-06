@@ -6,16 +6,21 @@ options {
     output=template;
 }
 
+scope Scope {
+  HashMap<String,HashMap<String,Number>> vars;
+  HashMap<String, Style> styles;
+}
+
 @header{
   import java.util.HashMap;
 }
 
 @members{
-  HashMap<String,HashMap<String,Number>> vars = new HashMap<String,HashMap<String,Number>>(); 
+   
   HashMap<String,HashMap<String,Object>> containerDefs = new HashMap<String,HashMap<String,Object>>(); 
-  HashMap<String, Style> styles = new HashMap<String, Style>(); 
+  HashMap<String,Container> containers = new HashMap<String,Container>(); 
   
-  HashMap<String,Number> initVar(String id){
+  HashMap<String,Number> initVar(HashMap<String,HashMap<String,Number>> vars, String id){
        if (vars.get(id) != null) {
          System.out.println("id trovato: "+id);//TODO recuperare riga
          
@@ -34,7 +39,7 @@ options {
        return container;
   }
   
-  Style initStyle(String id, String fillcolor, String bordercolor, int borderwidth){
+  Style initStyle(HashMap<String, Style> styles, String id, String fillcolor, String bordercolor, int borderwidth){
       if (styles.get(id) != null){
          //TODO throw eccezione
       }
@@ -148,9 +153,19 @@ options {
       this.borderwidth = borderwidth;
     }
   }
+  
+  class Container{
+    HashMap<String,HashMap<String,Number>> vars = new HashMap<String,HashMap<String,Number>>();
+    HashMap<String, Style> styles = new HashMap<String, Style>();
+  }
 }
 
-prog 	:	(rows+=row)* -> svgfile(rows={$rows});
+prog 	scope Scope;
+  @init{
+    $Scope::vars = new HashMap<String,HashMap<String,Number>>();
+    $Scope::styles = new HashMap<String, Style>();
+  }
+  :	(rows+=row)* {containers.put("",new Container());} -> svgfile(rows={$rows});
 
 row   : ^(ROW def comment?) -> row(def={$def.st},comment={$comment.st}) | ^(ROW comment) -> row(comment={$comment.st}); 
 
@@ -160,7 +175,7 @@ def returns [String id]:
   	^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) 
   	 {
   	   $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
+       HashMap<String, Number> var = initVar($Scope::vars,$id);
        var.put("x1",$p1.c1);
        var.put("y1",$p1.c2);
        var.put("x2",$p2.c1);
@@ -172,7 +187,7 @@ def returns [String id]:
 	|	^('square' ID ^(POSITION point) ^(SIDELEN expr) style?) 
 	   {
        $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
+       HashMap<String, Number> var = initVar($Scope::vars,$id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("size",$expr.val);
@@ -181,7 +196,7 @@ def returns [String id]:
 	|	^('circle' ID ^(POSITION point) ^(RADIUS expr) style?) 
 	   {
 	     $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
+       HashMap<String, Number> var = initVar($Scope::vars,$id);
 	     var.put("cx",$point.c1);
 	     var.put("cy",$point.c2);
 	     var.put("r",$expr.val);
@@ -190,7 +205,7 @@ def returns [String id]:
 	|	^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
        $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
+       HashMap<String, Number> var = initVar($Scope::vars,$id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("height",$v.val);
@@ -200,7 +215,7 @@ def returns [String id]:
 	|  ^('ellipse' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
 	   {
        $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
+       HashMap<String, Number> var = initVar($Scope::vars,$id);
        var.put("cx",$point.c1);
        var.put("cy",$point.c2);
        var.put("rx",$h.val);
@@ -210,7 +225,7 @@ def returns [String id]:
 	|	^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getStarPath($point.c1,$point.c2,$r.val,$n.val);} 
 	   {
        $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
+       HashMap<String, Number> var = initVar($Scope::vars,$id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("r",$r.val);
@@ -221,7 +236,7 @@ def returns [String id]:
 	| ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) {String path=getPolygonPath($point.c1,$point.c2,$r.val,$n.val);}
 	   {
        $id=$ID.text;
-       HashMap<String, Number> var = initVar($id);
+       HashMap<String, Number> var = initVar($Scope::vars,$id);
        var.put("x",$point.c1);
        var.put("y",$point.c2);
        var.put("r",$r.val);
@@ -229,35 +244,50 @@ def returns [String id]:
      }
 	     
 	   -> polreg(id={$ID.text},path={path},style={$style.st})
-	|	^('container' 
-	   (
-	     ID ^(POSITION point) 
-	     {
+	|
+		^('container' 
+     (
+       ID ^(POSITION point) 
+       {
           $id=$ID.text;
-          HashMap<String, Number> var = initVar($id);
+          HashMap<String, Number> var = initVar($Scope::vars,$id);
           var.put("x",$point.c1);
           var.put("y",$point.c2);
-	     } 
-	   ) 
-	   (containerdefs+=containerrow)*)
-	   {
+       } 
+     ) containerblock )
+     {
        HashMap<String, Object> c = initContainer($id);
-       System.out.println($containerdefs);
      } -> template() "TODO container"
 	| ^(('style'|'nfstyle') ID styledef)
 	  {
 	     $id=$ID.text;
-       initStyle($id,$styledef.fillcolor,$styledef.bordercolor,$styledef.borderwidth);
+       initStyle($Scope::styles,$id,$styledef.fillcolor,$styledef.bordercolor,$styledef.borderwidth);
 	  } -> template() "" 
 	;
 	
+containerblock
+     scope Scope;
+     @init {
+        $Scope::vars = new HashMap<String,HashMap<String,Number>>();
+        $Scope::styles = new HashMap<String,Style>();
+     }
+     :  (containerdefs+=containerrow)* {System.out.println($containerdefs);}
+     ;
+	
 containerrow :	^(ROW innerdef comment?) | ^(ROW comment);
 
-innerdef returns [String id]:
+innerdef returns [String id]
+  @after{
+    /*System.out.println("variabili e stili nello scope corrente:");
+    for (int s=$Scope.size()-1; s>=0; s--){
+      System.out.println("livello "+s+": \nvars: "+$Scope[s]::vars+"\nstyles: "+$Scope[s]::styles);
+    }*/
+  }
+  :
     def {$id=$def.id;}
   | ^(ID thisid=ID ^(POSITION point) ^(SCALE FLOAT) ^(ANGLE FLOAT))
     {
-      HashMap<String, Number> var = initVar($thisid.text);
+      HashMap<String, Number> var = initVar($Scope::vars,$thisid.text);
       var.put("x",$point.c1);
       var.put("y",$point.c2);
     }
@@ -266,7 +296,7 @@ innerdef returns [String id]:
 style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"
       | ID 
       {
-        Style s = styles.get($ID.text);
+        Style s = $Scope::styles.get($ID.text);
       } ->  styledef(color={s.fillcolor},bordercolor={s.bordercolor},width={s.borderwidth})
       ;
 
@@ -322,8 +352,17 @@ atom returns [Double val] :
   | ^(ID IDATTRIB) 
     {
       $val = 0.0;
+      HashMap<String,Number> var = null;
+      for (int s=$Scope.size()-1; s>=0 && var==null; s--){
+        var = $Scope[s]::vars.get($ID.text);
+      }
       try{
-         $val = vars.get($ID.text).get($IDATTRIB.text).doubleValue();
+         Number value = var.get($IDATTRIB.text);
+         try{
+            $val = value.doubleValue();
+         } catch (Exception e){
+            e.printStackTrace();
+         }
       } catch(Exception e){
         System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
         e.printStackTrace();
