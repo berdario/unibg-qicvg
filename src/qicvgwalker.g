@@ -257,7 +257,7 @@ def returns [String id]:
      ) containerblock )
      {
        HashMap<String, Object> c = initContainer($id);
-     } -> template() "TODO container"
+     } -> template(block={$containerblock.st}) "<block>"
 	| ^(('style'|'nfstyle') ID styledef)
 	  {
 	     $id=$ID.text;
@@ -265,18 +265,18 @@ def returns [String id]:
 	  } -> template() "" 
 	;
 	
-containerblock
+containerblock //[double scale, double angle]
      scope Scope;
      @init {
         $Scope::vars = new HashMap<String,HashMap<String,Number>>();
         $Scope::styles = new HashMap<String,Style>();
      }
-     :  (containerdefs+=containerrow)* {System.out.println($containerdefs);}
+     :  (containerdefs+=containerrow)* {System.out.println($containerdefs);} -> block(rows={$containerdefs})
      ;
 	
-containerrow :	^(ROW innerdef comment?) | ^(ROW comment);
+containerrow :	^(ROW innerdef comment?) -> row(def={$innerdef.st},comment={$comment.st}) | ^(ROW comment) -> row(comment={$comment.st});
 
-innerdef returns [String id]
+innerdef returns[qicvgwalker.containerblock_return prova]
   @after{
     /*System.out.println("variabili e stili nello scope corrente:");
     for (int s=$Scope.size()-1; s>=0; s--){
@@ -284,13 +284,19 @@ innerdef returns [String id]
     }*/
   }
   :
-    def {$id=$def.id;}
+    def -> {$def.st}
   | ^(ID thisid=ID ^(POSITION point) ^(SCALE FLOAT) ^(ANGLE FLOAT))
     {
       HashMap<String, Number> var = initVar($Scope::vars,$thisid.text);
       var.put("x",$point.c1);
       var.put("y",$point.c2);
-    }
+      try{
+        $prova=containerblock();
+      }catch(RecognitionException e){
+        System.err.println("provaci ancora");
+        e.printStackTrace();
+      }
+    } -> template(boh={$prova.st}) "dummy <boh>"
   ;
 	
 style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"

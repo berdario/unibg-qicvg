@@ -1,5 +1,6 @@
 group qicvgwalker;
 svgfile(rows) ::= "<rows; separator={<\n>}>"
+block(rows) ::= "<trunc(rows):{  <it><\n>}>  <last(rows)>"
 row(def,comment) ::= "<if(def)><def> <endif><comment>"
 line(id,x1,y1,x2,y2,style) ::= "\<line id=\"<id>\" x1=\"<x1>\" y1=\"<y1>\" x2=\"<x2>\" y2=\"<y2>\" <style> /\>"
 path(id,point,pathelements,style) ::= "\<path id=\"<id>\" d=\"M <point><pathelements>\" <style> /\>"
