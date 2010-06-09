@@ -34,8 +34,15 @@ tokens {
 	COMMENT;
 }
 
-@members {
+@header {
+  import java.util.HashMap;
+  import java.util.ArrayList;
+}
 
+@members {
+  HashMap<String,ArrayList<CommonTree>> containers = new HashMap<String,ArrayList<CommonTree>>();
+  //TODO: non supporta gli scope
+   
 	List<RecognitionException> exceptions = new ArrayList<RecognitionException>();
 
 	public List<RecognitionException> getExceptions() {
@@ -118,7 +125,9 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSI
 	| 'ellipse' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('ellipse' ID ^(POSITION point) ^(HORIZLEN coord) ^(VERTLEN coord) style?)
 	|	'star' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('star' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	| 'polreg' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('polreg' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
-	|	'container' ID '(' point ')' '[' ( ENDL containerrow? )* ']' -> ^('container' ID ^(POSITION point) ^(ROW containerrow)*) // TODO: non è possibile specificare un container seguito da un commento prima delle istruzioni contenute... valutare
+	|	'container' ID '(' point ')' '[' ( ENDL (elements+=containerrow?) )* ']' {
+	   containers.put($ID.text,(ArrayList<CommonTree>) $elements);
+	} -> ^('container' ID ^(POSITION point) ^(ROW containerrow)*) // TODO: non è possibile specificare un container seguito da un commento prima delle istruzioni contenute... valutare
 	| 'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef)
 	;
 	

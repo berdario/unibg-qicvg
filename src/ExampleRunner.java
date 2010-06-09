@@ -37,6 +37,16 @@ public class ExampleRunner {
 
 			CommonTreeNodeStream aststream = new CommonTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);
+			unroller unrollwalker = new unroller(aststream);
+			
+			tree = (CommonTree) unrollwalker.prog(3,parser.containers).getTree();
+			
+			System.out.println("AST unrolled:");
+			System.out.println(tree.toStringTree());
+
+			aststream = new CommonTreeNodeStream(tree);
+			aststream.setTokenStream(tokens);
+			
 			qicvgwalker walker = new qicvgwalker(aststream);
 			
 			FileReader templateFile = new FileReader("src" + File.separator + "qicvgwalker.stg");

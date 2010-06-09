@@ -13,3 +13,5 @@ src/qicvgLexer.java
 src/qicvgParser.java
 src/qicvgwalker.java
 src/qicvgwalker.tokens
+src/unroller.java
+src/unroller.tokens

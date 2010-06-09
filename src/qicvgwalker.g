@@ -265,7 +265,7 @@ def returns [String id]:
 	  } -> template() "" 
 	;
 	
-containerblock //[double scale, double angle]
+containerblock
      scope Scope;
      @init {
         $Scope::vars = new HashMap<String,HashMap<String,Number>>();
@@ -276,7 +276,7 @@ containerblock //[double scale, double angle]
 	
 containerrow :	^(ROW innerdef comment?) -> row(def={$innerdef.st},comment={$comment.st}) | ^(ROW comment) -> row(comment={$comment.st});
 
-innerdef returns[qicvgwalker.containerblock_return prova]
+innerdef
   @after{
     /*System.out.println("variabili e stili nello scope corrente:");
     for (int s=$Scope.size()-1; s>=0; s--){
@@ -290,13 +290,7 @@ innerdef returns[qicvgwalker.containerblock_return prova]
       HashMap<String, Number> var = initVar($Scope::vars,$thisid.text);
       var.put("x",$point.c1);
       var.put("y",$point.c2);
-      try{
-        $prova=containerblock();
-      }catch(RecognitionException e){
-        System.err.println("provaci ancora");
-        e.printStackTrace();
-      }
-    } -> template(boh={$prova.st}) "dummy <boh>"
+    } -> template() "dummy"
   ;
 	
 style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"
