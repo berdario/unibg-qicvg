@@ -16,9 +16,11 @@ options {
   int depth;
   
   CommonTree unroll(String containerid, String refid, double x, double y, double scale, double angle){
-    CommonTree c = new CommonTree(new CommonToken(COMMENT,"COMMENT"));
-    c.addChild(new CommonTree(new CommonToken(COMMENTTEXT,"unrolleddummy")));
-    return c;
+    CommonTree r = new CommonTree();
+    for (CommonTree t : containers.get(containerid)){
+        r.addChild(t);
+    }
+    return r;
   }
 }
 
@@ -29,7 +31,7 @@ prog [int recursionDepth, HashMap<String,ArrayList<CommonTree>> containers]
  }
  : (rows+=row)* ;
 
-row   : ^(ROW def comment?) | ^(ROW comment); 
+row   : def | comment; 
 
 comment: ^(COMMENT COMMENTTEXT);
 
@@ -49,7 +51,7 @@ def :
 containerblock
      :  (containerdefs+=containerrow)*  ;
   
-containerrow :  ^(ROW innerdef comment?)  | ^(ROW comment);
+containerrow :  innerdef | comment;
 
 innerdef:
     def 

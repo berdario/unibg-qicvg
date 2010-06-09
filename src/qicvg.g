@@ -28,7 +28,6 @@ tokens {
 	LINETO;
 	HORIZONTALLINE;
 	VERTICALLINE;
-	ROW;
 	SCALE;
 	ANGLE;
 	COMMENT;
@@ -57,7 +56,7 @@ tokens {
 
 }
 
-prog 	:	row? (ENDL row?)* -> ^(ROW row)*;
+prog 	:	row? (ENDL row?)* -> row*;
 
 INT :	'0'..'9'+ ;
 
@@ -127,7 +126,7 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSI
 	| 'polreg' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('polreg' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	|	'container' ID '(' point ')' '[' ( ENDL (elements+=containerrow?) )* ']' {
 	   containers.put($ID.text,(ArrayList<CommonTree>) $elements);
-	} -> ^('container' ID ^(POSITION point) ^(ROW containerrow)*) // TODO: non è possibile specificare un container seguito da un commento prima delle istruzioni contenute... valutare
+	} -> ^('container' ID ^(POSITION point) containerrow* ) // TODO: non è possibile specificare un container seguito da un commento prima delle istruzioni contenute... valutare
 	| 'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef)
 	;
 	

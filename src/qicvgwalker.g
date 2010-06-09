@@ -167,7 +167,7 @@ prog 	scope Scope;
   }
   :	(rows+=row)* {containers.put("",new Container());} -> svgfile(rows={$rows});
 
-row   : ^(ROW def comment?) -> row(def={$def.st},comment={$comment.st}) | ^(ROW comment) -> row(comment={$comment.st}); 
+row   : def -> template(def={$def.st}) "<def>" | comment -> template(comment={$comment.st}) "<comment>" ; 
 
 comment: ^(COMMENT COMMENTTEXT) -> template(c={$COMMENTTEXT.text}) "\<!--<c>--\>" ;
 
@@ -274,7 +274,7 @@ containerblock
      :  (containerdefs+=containerrow)* {System.out.println($containerdefs);} -> block(rows={$containerdefs})
      ;
 	
-containerrow :	^(ROW innerdef comment?) -> row(def={$innerdef.st},comment={$comment.st}) | ^(ROW comment) -> row(comment={$comment.st});
+containerrow :	innerdef -> template(def={$innerdef.st}) "<def>" | comment -> template(comment={$comment.st}) "<comment>";
 
 innerdef
   @after{
