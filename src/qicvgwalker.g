@@ -22,7 +22,7 @@ scope Scope {
   
   HashMap<String,Number> initVar(HashMap<String,HashMap<String,Number>> vars, String id){
        if (vars.get(id) != null) {
-         System.out.println("id trovato: "+id);//TODO recuperare riga
+         System.err.println("Warning: L'id "+id+ " è riferito a più oggetti, i riferimenti potrebbero non essere corretti ");//TODO recuperare riga
          
        }
        HashMap<String, Number> var = new HashMap<String, Number>();
@@ -41,7 +41,7 @@ scope Scope {
   
   Style initStyle(HashMap<String, Style> styles, String id, String fillcolor, String bordercolor, int borderwidth){
       if (styles.get(id) != null){
-         //TODO throw eccezione
+         System.err.println("Warning : Sono presenti più dichiarazioni dello stile '" + id + "' verrà considerata l'ultima occorrenza ");
       }
       Style s = this.new Style(fillcolor, bordercolor, borderwidth);
       styles.put(id,s);
@@ -80,7 +80,7 @@ scope Scope {
     //inizializzo il primo punto, il quale sarà orientato 
     //della meta dei gradi della corona esterna
     //il raggio interno è proporzionale all'esterno.
-    double intradius = radius/4;
+    double intradius = radius/3;
     //System.out.println("inizio il ciclo");  
     for (int i=0;i<nv;i++)
     {
@@ -297,6 +297,10 @@ style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"
       | ID 
       {
         Style s = $Scope::styles.get($ID.text);
+        if (s==null) {
+                      
+                      System.err.println("Lo style " +$ID.text+ " è stato richiamato senza essere dichiarato, verrà utilizzato lo stile di default");}
+                      s= new Style("black","black",1);
       } ->  styledef(color={s.fillcolor},bordercolor={s.bordercolor},width={s.borderwidth})
       ;
 
@@ -361,11 +365,11 @@ atom returns [Double val] :
          try{
             $val = value.doubleValue();
          } catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
          }
       } catch(Exception e){
         System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
-        e.printStackTrace();
+        //e.printStackTrace();
       }
     }
   ;

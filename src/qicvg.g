@@ -42,11 +42,10 @@ tokens {
 		return exceptions;
 	}
 
-	@Override
+	/*@Override
 	public void reportError(RecognitionException e) {
-		super.reportError(e);
 		exceptions.add(e);
-	}
+	}*/
 
 }
 
