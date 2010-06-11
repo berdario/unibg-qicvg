@@ -10,10 +10,6 @@ public class QicvgTree extends CommonTree {
 
 	private int line = 0;
 	private int column = 0;
-	
-	protected ArrayList<QicvgTree> children = new ArrayList<QicvgTree>();
-	public QicvgTree parent;
-	public int childIndex = -1;
 
 	public QicvgTree(){}
 	
@@ -30,8 +26,13 @@ public class QicvgTree extends CommonTree {
 		super(node);
 		this.childIndex = node.childIndex;
 		this.parent = node.parent;
-		for (QicvgTree c : node.children){
-			this.children.add(new QicvgTree(c));
+		if (node.children != null) {
+			if (this.children == null){
+				this.children = new ArrayList();
+			}
+			for (QicvgTree c : (ArrayList<QicvgTree>) node.children) {
+				this.children.add(new QicvgTree(c));
+			}
 		}
 	}
 	

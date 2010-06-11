@@ -56,7 +56,7 @@ options {
     r.addChildren( unroll(containerid, refid, x, y, scale, angle));
     //r.freshenParentAndChildIndexes();
     //r.freshenParentAndChildIndexes();
-    r.sanityCheckParentAndChildIndexes();
+    //r.sanityCheckParentAndChildIndexes();
     return r;
   }
   
