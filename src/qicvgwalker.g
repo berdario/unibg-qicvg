@@ -1,8 +1,8 @@
 tree grammar qicvgwalker;
 
 options {
-    tokenVocab=qicvg ; // reuse token types
-    ASTLabelType=CommonTree; // $label will have type CommonTree
+    tokenVocab=qicvg ;
+    ASTLabelType=QicvgTree; 
     output=template;
 }
 

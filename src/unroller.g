@@ -3,7 +3,7 @@ tree grammar unroller;
 options {
   output = AST;
   tokenVocab = qicvg;
-  ASTLabelType = CommonTree;
+  ASTLabelType = QicvgTree;
 }
 
 @header {
@@ -12,19 +12,19 @@ options {
 }
 
 @members{
-  HashMap<String,ArrayList<CommonTree>> containers;
+  HashMap<String,ArrayList<QicvgTree>> containers;
   int depth;
   //Stack<Integer> currentDepth = new Stack<Integer>();
   ArrayList<Integer> currentDepth = new ArrayList<Integer>();
   boolean hasFinishedUnrolling=true;
   
-  ArrayList<CommonTree> unroll(String containerid, String refid, double x, double y, double scale, double angle){
-    ArrayList<CommonTree> r = new ArrayList<CommonTree>();
+  ArrayList<QicvgTree> unroll(String containerid, String refid, double x, double y, double scale, double angle){
+    ArrayList<QicvgTree> r = new ArrayList<QicvgTree>();
     String innerid;
-    CommonTree newtree;
-    for (CommonTree t : containers.get(containerid)){
+    QicvgTree newtree;
+    for (QicvgTree t : containers.get(containerid)){
         if (t.getToken().getText().equals(containerid)){
-          innerid = ((CommonTree)t.getFirstChildWithType(ID)).getToken().getText();
+          innerid = ((QicvgTree)t.getFirstChildWithType(ID)).getToken().getText();
           if (innerid.equals(refid)){
             if ( currentDepth.get(0)<depth ){
               currentDepth.add(0,currentDepth.get(0)+1);
@@ -37,8 +37,8 @@ options {
             r.addAll(unroll(containerid, innerid, x, y, scale, angle));
           }
         } else{
-            newtree = new CommonTree(t);
-            newtree.setChild(0,new CommonTree(new CommonToken(ID,((CommonTree) newtree.getChild(0)).getToken().getText().substring(0,6)+((char)(Math.random()*26+'a')))));
+            newtree = new QicvgTree(t);
+            newtree.setChild(0,new QicvgTree(new CommonToken(ID,((QicvgTree) newtree.getChild(0)).getToken().getText().substring(0,6)+((char)(Math.random()*26+'a')))));
             System.err.println(newtree.toStringTree());
             r.add(newtree);
         }
@@ -50,8 +50,8 @@ options {
     return r;
   }
   
-  CommonTree startunroller(String containerid, String refid, double x, double y, double scale, double angle){
-    CommonTree r = new CommonTree();
+  QicvgTree startunroller(String containerid, String refid, double x, double y, double scale, double angle){
+    QicvgTree r = new QicvgTree();
     r.sanityCheckParentAndChildIndexes();
     r.addChildren( unroll(containerid, refid, x, y, scale, angle));
     //r.freshenParentAndChildIndexes();
@@ -64,7 +64,7 @@ options {
 
 
 
-prog [int recursionDepth, HashMap<String,ArrayList<CommonTree>> containers]
+prog [int recursionDepth, HashMap<String,ArrayList<QicvgTree>> containers]
  @init{
     this.containers=containers;
     depth = recursionDepth;
@@ -107,7 +107,7 @@ innerdef:
     //cosa che invece non è così facilmente fattibile iniziando a fare chiamate ricorsive per gestire oggetti diversi...
     //ora che ci penso forse potrei comunque lasciar cadere gli id inutili, generandoli implicitamente all'interno di questa regola... o meglio ancora durante il primo parsing, durante il quale ne conosco anche il numero
     {
-    CommonTree r=startunroller($containerid.text,$thisid.text,$point.c1,$point.c2,new Double($scale.text),new Double($angle.text));
+    QicvgTree r=startunroller($containerid.text,$thisid.text,$point.c1,$point.c2,new Double($scale.text),new Double($angle.text));
     r.freshenParentAndChildIndexes();
     r.setUnknownTokenBoundaries();}
     

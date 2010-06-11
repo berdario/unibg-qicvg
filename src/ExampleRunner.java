@@ -11,8 +11,6 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenRewriteStream;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.TreeRewriter;
 import org.antlr.stringtemplate.StringTemplateGroup;
@@ -30,9 +28,9 @@ public class ExampleRunner {
 		CommonTokenStream tokens = new CommonTokenStream(lex);
 		qicvgParser parser = new qicvgParser(tokens);
 		
-		//parser.setTreeAdaptor(new CommonTreeAdaptor());
+		parser.setTreeAdaptor(new QicvgTreeAdaptor());
 		qicvgParser.prog_return ret = parser.prog();
-		CommonTree tree = (CommonTree) ret.getTree();
+		QicvgTree tree = (QicvgTree) ret.getTree();
 		if (ret.tree != null) { // needed when the input is empty
 			System.out.println("AST generato:");
 			System.out.println(tree.toStringTree());
@@ -40,8 +38,9 @@ public class ExampleRunner {
 			CommonTreeNodeStream aststream = new CommonTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);
 			unroller unrollwalker = new unroller(aststream);
+			unrollwalker.setTreeAdaptor(new QicvgTreeAdaptor());
 			
-			tree = (CommonTree) unrollwalker.prog(2,parser.containers).getTree();
+			tree = (QicvgTree) unrollwalker.prog(2,parser.containers).getTree();
 			/*tree.freshenParentAndChildIndexes();
 			tree.setUnknownTokenBoundaries();
 			tree.sanityCheckParentAndChildIndexes();*/

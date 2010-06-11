@@ -2,6 +2,7 @@ grammar qicvg;
 
 options{
 	output=AST;
+	ASTLabelType = QicvgTree;
 }
 
 tokens {
@@ -39,7 +40,7 @@ tokens {
 }
 
 @members {
-  HashMap<String,ArrayList<CommonTree>> containers = new HashMap<String,ArrayList<CommonTree>>();
+  HashMap<String,ArrayList<QicvgTree>> containers = new HashMap<String,ArrayList<QicvgTree>>();
   //TODO: non supporta gli scope
    
 	List<RecognitionException> exceptions = new ArrayList<RecognitionException>();
@@ -114,7 +115,7 @@ COLORNAME
 
 row 	:	def comment? | comment;
       
-comment : COMMENTTEXT -> ^(COMMENT {new CommonTree(new CommonToken(COMMENTTEXT,$COMMENTTEXT.text.substring(2)))});
+comment : COMMENTTEXT -> ^(COMMENT {new QicvgTree(new CommonToken(COMMENTTEXT,$COMMENTTEXT.text.substring(2)))});
 
 def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSITION point) ^(FINALPOSITION point) nfstyle?)
 	|	'path' ID '(' point (',' style)? ')' ('.' pathel)* -> ^('path' ID ^(POSITION point) style? pathel*)
@@ -125,7 +126,7 @@ def	:	'line' ID '(' point ',' point (',' nfstyle)? ')' -> ^('line' ID ^(INITPOSI
 	|	'star' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('star' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	| 'polreg' ID '(' point ',' coord ',' coord (','style)? ')' -> ^('polreg' ID ^(POSITION point) ^(RADIUS coord) ^(VERTEXES coord) style?)
 	|	'container' ID '(' point ')' '[' ( ENDL (elements+=containerrow?) )* ']' {
-	   containers.put($ID.text,(ArrayList<CommonTree>) $elements);
+	   containers.put($ID.text,(ArrayList<QicvgTree>) $elements);
 	} -> ^('container' ID ^(POSITION point) containerrow* ) // TODO: non è possibile specificare un container seguito da un commento prima delle istruzioni contenute... valutare
 	| 'style' ID '(' styledef ')' -> ^('style' ID styledef)  | 'nfstyle' ID '(' nfstyledef ')' -> ^('nfstyle' ID nfstyledef)
 	;
