@@ -4,6 +4,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Stack;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -39,7 +41,10 @@ public class ExampleRunner {
 			aststream.setTokenStream(tokens);
 			unroller unrollwalker = new unroller(aststream);
 			
-			tree = (CommonTree) unrollwalker.prog(3,parser.containers).getTree();
+			tree = (CommonTree) unrollwalker.prog(2,parser.containers).getTree();
+			/*tree.freshenParentAndChildIndexes();
+			tree.setUnknownTokenBoundaries();
+			tree.sanityCheckParentAndChildIndexes();*/
 			
 			System.out.println("AST unrolled:");
 			System.out.println(tree.toStringTree());
