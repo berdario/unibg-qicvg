@@ -18,7 +18,7 @@ scope Scope {
 @members{
    
   HashMap<String,HashMap<String,Object>> containerDefs = new HashMap<String,HashMap<String,Object>>(); 
-  HashMap<String,Container> containers = new HashMap<String,Container>(); 
+  HashMap<String,Container> containers = new HashMap<String,Container>();
   
   HashMap<String,Number> initVar(HashMap<String,HashMap<String,Number>> vars, String id){
        if (vars.get(id) != null) {
@@ -160,10 +160,13 @@ scope Scope {
   }
 }
 
-prog 	scope Scope;
+prog [HashMap<String,HashMap<String,Number>> containerPositions]
+  scope Scope;
   @init{
     $Scope::vars = new HashMap<String,HashMap<String,Number>>();
     $Scope::styles = new HashMap<String, Style>();
+    //TODO aggiungere controllo per assenza di conflitti con ID già definiti
+    $Scope::vars.putAll(containerPositions);
   }
   :	(rows+=row)* {containers.put("",new Container());} -> svgfile(rows={$rows});
 
@@ -365,8 +368,8 @@ atom returns [Double val] :
             e.printStackTrace();
          }
       } catch(Exception e){
-        //System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
-        //e.printStackTrace();
+        System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
+        e.printStackTrace();
       }
     }
   ;

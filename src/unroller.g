@@ -9,10 +9,12 @@ options {
 @header {
   import java.util.HashMap;
   import java.util.ArrayList;
+  import java.util.Arrays;
 }
 
 @members{
   HashMap<String,ArrayList<QicvgTree>> containers;
+  HashMap<String,HashMap<String,Number>> containerPositions = new HashMap<String,HashMap<String,Number>>();
   int depth;
   //Stack<Integer> currentDepth = new Stack<Integer>();
   ArrayList<Integer> currentDepth = new ArrayList<Integer>();
@@ -97,7 +99,17 @@ def
   | ^('ellipse' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) -> ^('ellipse')
   | ^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) -> ^('star')
   | ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) -> ^('polreg')
-  | ^('container' ( ID ^(POSITION point) ) containerblock ) -> containerblock
+  | ^('container' ( ID ^(POSITION c1=INT c2=INT)
+     {
+        if (containerPositions.get($ID.text) != null){
+            System.out.println("id trovato: "+$ID.text); //TODO
+        }
+        HashMap<String,Number> pos = new HashMap<String,Number>();
+        pos.put("x",new Integer($c1.text));
+        pos.put("y",new Integer($c2.text)); 
+        containerPositions.put($ID.text,pos);
+     }
+     ) containerblock ) -> containerblock
   | ^('style' ID styledef) -> ^('style')
   | ^('nfstyle' ID styledef) -> ^('nfstyle')
   ;

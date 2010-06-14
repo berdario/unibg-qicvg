@@ -58,7 +58,7 @@ public class ExampleRunner {
 			templateFile.close();
 			walker.setTemplateLib(templates);
 			
-			qicvgwalker.prog_return output = walker.prog();
+			qicvgwalker.prog_return output = walker.prog(unrollwalker.containerPositions);
 			System.out.println("output:\n"+output.getTemplate());
 			//System.out.println("\n"+tokens.toString());
 			
