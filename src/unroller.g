@@ -38,8 +38,16 @@ options {
           }
         } else{
             newtree = new QicvgTree(t);
-            newtree.setChild(0,new QicvgTree(new CommonToken(ID,((QicvgTree) newtree.getChild(0)).getToken().getText().substring(0,6)+((char)(Math.random()*26+'a')))));
-            System.err.println(newtree.toStringTree());
+            //newtree.setChild(0,new QicvgTree(new CommonToken(ID,((QicvgTree) newtree.getChild(0)).getToken().getText().substring(0,6)+((char)(Math.random()*26+'a')))));
+            try{
+              newtree.setParent(null);
+              newtree.setChildIndex(-1);
+              //System.err.println(newtree.toStringTree());
+              newtree.freshenParentAndChildIndexes();
+              newtree.sanityCheckParentAndChildIndexes();
+            } catch(IllegalStateException e){
+              System.err.println(e);
+            }
             r.add(newtree);
         }
     }
@@ -56,7 +64,7 @@ options {
     r.addChildren( unroll(containerid, refid, x, y, scale, angle));
     //r.freshenParentAndChildIndexes();
     //r.freshenParentAndChildIndexes();
-    //r.sanityCheckParentAndChildIndexes();
+    r.sanityCheckParentAndChildIndexes();
     return r;
   }
   
@@ -74,19 +82,24 @@ prog [int recursionDepth, HashMap<String,ArrayList<QicvgTree>> containers]
 
 row   : def | comment; 
 
-comment: ^(COMMENT COMMENTTEXT);
+comment: ^(COMMENT COMMENTTEXT) -> ^(COMMENT);
 
-def :
-    ^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) 
-  | ^('path' ID ^(POSITION point) style? pathelements+=pathel*) 
-  | ^('square' ID ^(POSITION point) ^(SIDELEN expr) style?) 
-  | ^('circle' ID ^(POSITION point) ^(RADIUS expr) style?) 
-  | ^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
-  | ^('ellipse' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) 
-  | ^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?)  
-  | ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?)
-  | ^('container' ( ID ^(POSITION point) ) containerblock )
-  | ^(('style'|'nfstyle') ID styledef)
+def 
+  @after{
+  $def.tree.freshenParentAndChildIndexes();
+  $def.tree.sanityCheckParentAndChildIndexes();}
+:
+    ^('line' ID ^(INITPOSITION p1=point) ^(FINALPOSITION p2=point) style?) -> ^('line')
+  | ^('path' ID ^(POSITION point) style? pathelements+=pathel*) -> ^('path')
+  | ^('square' ID ^(POSITION point) ^(SIDELEN expr) style?)  -> ^('square')
+  | ^('circle' ID ^(POSITION point) ^(RADIUS expr) style?)  -> ^('circle')
+  | ^('rect' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) -> ^('rect') 
+  | ^('ellipse' ID ^(POSITION point) ^(HORIZLEN h=expr) ^(VERTLEN v=expr) style?) -> ^('ellipse')
+  | ^('star' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) -> ^('star')
+  | ^('polreg' ID ^(POSITION point) ^(RADIUS r=expr) ^(VERTEXES n=expr) style?) -> ^('polreg')
+  | ^('container' ( ID ^(POSITION point) ) containerblock ) -> containerblock
+  | ^('style' ID styledef) -> ^('style')
+  | ^('nfstyle' ID styledef) -> ^('nfstyle')
   ;
   
 containerblock
@@ -95,7 +108,7 @@ containerblock
 containerrow :  innerdef | comment;
 
 innerdef:
-    def 
+    def  -> 
   | ^(containerid=ID thisid=ID ^(POSITION point) ^(SCALE scale=FLOAT) ^(ANGLE angle=FLOAT))
     //possibile un approccio depthfirst o breadthfirst... scelgo un depthfirst:
     //nel caso di frattali semplici (con una sola componente ricorsiva), l'unroll avviene con una sola passata
@@ -106,12 +119,9 @@ innerdef:
     //e ripensandoci ancora, l'ipotesi iniziale di unrollare solo un dato oggetto per volta, distinguendolo dall'id, mi permette di capire più facilmente la profondità del ciclo, grazie alla ricorsione sulla funzione
     //cosa che invece non è così facilmente fattibile iniziando a fare chiamate ricorsive per gestire oggetti diversi...
     //ora che ci penso forse potrei comunque lasciar cadere gli id inutili, generandoli implicitamente all'interno di questa regola... o meglio ancora durante il primo parsing, durante il quale ne conosco anche il numero
-    {
-    QicvgTree r=startunroller($containerid.text,$thisid.text,$point.c1,$point.c2,new Double($scale.text),new Double($angle.text));
-    r.freshenParentAndChildIndexes();
-    r.setUnknownTokenBoundaries();}
     
-    -> {r}
+    
+    -> {startunroller($containerid.text,$thisid.text,$point.c1,$point.c2,new Double($scale.text),new Double($angle.text))}
   ;
   
 style : styledef | ID;

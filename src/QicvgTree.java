@@ -26,6 +26,7 @@ public class QicvgTree extends CommonTree {
 		super(node);
 		this.childIndex = node.childIndex;
 		this.parent = node.parent;
+		//System.err.println("nodo: "+this+" parent: "+this.parent);
 		if (node.children != null) {
 			if (this.children == null){
 				this.children = new ArrayList();
@@ -38,6 +39,20 @@ public class QicvgTree extends CommonTree {
 	
 	public Tree dupNode() {
 		return new QicvgTree(this);
+	}
+	
+	public void freshenParentAndChildIndexes() {
+		freshenParentAndChildIndexes(0);
+	}
+	
+	public void freshenParentAndChildIndexes(int offset) {
+		int n = getChildCount();
+		for (int c = offset; c < n; c++) {
+			Tree child = (Tree)getChild(c);
+			child.setChildIndex(c);
+			child.setParent(this);
+			child.freshenParentAndChildIndexes();
+		}
 	}
 
 	public int getLine() {

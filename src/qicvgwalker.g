@@ -257,6 +257,7 @@ def returns [String id]:
      ) containerblock )
      {
        HashMap<String, Object> c = initContainer($id);
+       System.err.println("def ast: "+((QicvgTree)$def.start).toStringTree());
      } -> template(block={$containerblock.st}) "<block>"
 	| ^(('style'|'nfstyle') ID styledef)
 	  {
@@ -364,8 +365,8 @@ atom returns [Double val] :
             e.printStackTrace();
          }
       } catch(Exception e){
-        System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
-        e.printStackTrace();
+        //System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
+        //e.printStackTrace();
       }
     }
   ;

@@ -1,6 +1,5 @@
 path pippo (0,0)
-path pippo(0,3)//questo è un commento
-//linea con solo commento
+path pippo(0,3)
 path pluto (20,30,#FFF,blue,3).C(1,400,600,200,800,600).Z()
 path constileincompleto (10,10,,,)
 circle C1 (100, 100, 10 )
@@ -30,7 +29,7 @@ container frattaleb (0,0)[
 //line linea2 (frattale2.x,frattale2.y,frattale2.x+1,frattale2.y)
 ]
 //container frattale3 (0,0)[]
-rect R2 (100, 100, 5, 10)
-
+rect R2 (100, 100, 5, 10)//questo è un commento
+//linea con solo commento
 
 
