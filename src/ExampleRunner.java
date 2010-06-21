@@ -32,8 +32,8 @@ public class ExampleRunner {
 		qicvgParser.prog_return ret = parser.prog();
 		CommonTree tree = (CommonTree) ret.getTree();
 		if (ret.tree != null) { // needed when the input is empty
-			System.out.println("AST generato:");
-			System.out.println(tree.toStringTree());
+			//System.out.println("AST generato:");
+			//System.out.println(tree.toStringTree());
 
 			CommonTreeNodeStream aststream = new CommonTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);

@@ -1,39 +1,18 @@
-path pippo (0,0)
-path pippo(0,3)//questo è un commento
-path pluto (20,30,#FFF,blue,3).C(1,400,600,200,800,600).Z()  
-path constileincompleto (10,10,,,)
+//doppio ID
+polreg poligono (400,500x,50,6,white,white,1)
+polreg poligono (400,600,70,5,red,white,1)
 
-//linea con solo commento
-path pluto (20,30,#FFF,blue,3).C(1,400,600,200,800,600).Z()
-path constileincompleto (10,10,,,)
-nfstyle emptyblue (blue,8)
-circle C1 (100, 100, 10, emptyblue )
-square R1 (C1.cx, C1.cy, 10 )
-rect R2 (100, 100, 5, 10)
-ellipse E1 (100, 100, 5, 10)
-circle C2 (E1.cx,E1.cy, C1.r * 2 )
-rect prova(E3.cx,10,10,10)
-style bigblu (blue,#004499,8)
-rect provastile (100,200,5,10,bigblu)
-path pluto (20,30,#FFF,blue,3).T(1,400,600,200,800,600)
-path paperino (40,40).H(-100).V(-100).M(110,110).L(30,30)
-polreg poligono (200,200,50,8)
-star stella_con_dimensione_complicata (0,0, 7*(C2.r++2*9)/8+1 ,5, bigblu)
-star stella (300,300,100,12)
-pelOIWFOIOWFWFWfline linea (0,0,5,5,emptyblue)
-container frattale (0,0)[
-line linea1 (frattale.x,frattale.y,frattale.x+1,frattale.y)
-line linea2 (frattale.x+3,frattale.y,frattale.x+4,frattale.y)
-]
-//container frattaleb (0,0)[ 
-//TODO: questa seconda alternativa considerata per costruire un frattale, dopo i cambiamenti della rvn 30, direi che implica troppe complicazioni... valutare di rimuoverla
-//line linea1 (frattaleb.x,frattaleb.y,frattaleb.x+1,frattaleb.y)
-//frattaleb frattale1 (linea1.x2,linea1.y2, 0.35, 0.785714285714)
-//frattaleb frattale2 (frattale1.x,frattale1.y, 0.35, 0.785714285714)
-//line linea2 (frattale2.x,frattale2.y,frattale2.x+1,frattale2.y)
-//]
-//container frattale3 (0,0)[]
-rect R2 (100, 100, 5, 10)
+//doppio stile
+style doppiostile errore (black,#FFF,1)
+
+style doppiostile (red,#FFF,2)
+
+//richiamo stile inesistente
+rect rettangolo(100,100,250,200,deepblue)
 
 
+//ID inesistente
+circle provaid (idinesistente.x,100,50)
 
+//Attributo inesistente
+circle cerchio (rettangolo.cx,rettangolo.y,40)

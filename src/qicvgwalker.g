@@ -22,9 +22,8 @@ scope Scope {
   
   HashMap<String,Number> initVar(HashMap<String,HashMap<String,Number>> vars, String id){
        if (vars.get(id) != null) {
-         System.err.println("Warning: L'id "+id+ " è riferito a più oggetti, i riferimenti potrebbero non essere corretti ");//TODO recuperare riga
-         
-       }
+         System.err.println("Warning : L'id "+id+ " è riferito a più oggetti, i riferimenti potrebbero non essere corretti ");//TODO recuperare riga
+          }
        HashMap<String, Number> var = new HashMap<String, Number>();
        vars.put(id,var);
        return var;
@@ -271,7 +270,8 @@ containerblock
         $Scope::vars = new HashMap<String,HashMap<String,Number>>();
         $Scope::styles = new HashMap<String,Style>();
      }
-     :  (containerdefs+=containerrow)* {System.out.println($containerdefs);}
+     :  (containerdefs+=containerrow)* {//System.out.println($containerdefs);
+                                        }
      ;
 	
 containerrow :	^(ROW innerdef comment?) | ^(ROW comment);
@@ -297,10 +297,11 @@ style	:	styledef -> template(sdef={$styledef.st}) "<sdef>"
       | ID 
       {
         Style s = $Scope::styles.get($ID.text);
+        
         if (s==null) {
                       
-                      System.err.println("Lo style " +$ID.text+ " è stato richiamato senza essere dichiarato, verrà utilizzato lo stile di default");}
-                      s= new Style("black","black",1);
+                      System.err.println("Warning : Lo style " +$ID.text+ " è stato richiamato senza essere dichiarato, verrà utilizzato lo stile di default");
+                      s= new Style("black","black",1);}
       } ->  styledef(color={s.fillcolor},bordercolor={s.bordercolor},width={s.borderwidth})
       ;
 
@@ -365,10 +366,11 @@ atom returns [Double val] :
          try{
             $val = value.doubleValue();
          } catch (Exception e){
-            //e.printStackTrace();
+            System.err.println("Warning : Tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
+        
          }
       } catch(Exception e){
-        System.err.println("tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
+        System.err.println("Warning : Tentativo di accedere all'attributo "+$IDATTRIB.text+" dell'oggetto "+$ID.text+" non andato a buon fine:");
         //e.printStackTrace();
       }
     }
