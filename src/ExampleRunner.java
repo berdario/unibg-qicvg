@@ -24,7 +24,7 @@ public class ExampleRunner {
 	 * @throws RecognitionException 
 	 */
 	public static void main(String[] args) throws IOException, RecognitionException {
-		qicvgLexer lex = new qicvgLexer(new ANTLRFileStream("test"+File.separator+"test1.txt","UTF8"));
+		qicvgLexer lex = new qicvgLexer(new ANTLRFileStream("test"+File.separator+"test1temp.txt","UTF8"));
 		CommonTokenStream tokens = new CommonTokenStream(lex);
 		qicvgParser parser = new qicvgParser(tokens);
 		
@@ -35,7 +35,7 @@ public class ExampleRunner {
 			System.out.println("AST generato:");
 			System.out.println(tree.toStringTree());
 
-			CommonTreeNodeStream aststream = new CommonTreeNodeStream(tree);
+			QicvgTreeNodeStream aststream = new QicvgTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);
 			unroller unrollwalker = new unroller(aststream);
 			unrollwalker.setTreeAdaptor(new QicvgTreeAdaptor());
@@ -45,10 +45,10 @@ public class ExampleRunner {
 			tree.setUnknownTokenBoundaries();
 			tree.sanityCheckParentAndChildIndexes();*/
 			
-			System.out.println("AST unrolled:");
-			System.out.println(tree.toStringTree());
+			//System.out.println("AST unrolled:");
+			//System.out.println(tree.toStringTree());
 
-			aststream = new CommonTreeNodeStream(tree);
+			aststream = new QicvgTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);
 			
 			qicvgwalker walker = new qicvgwalker(aststream);

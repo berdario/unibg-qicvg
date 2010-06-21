@@ -37,6 +37,10 @@ public class QicvgTree extends CommonTree {
 		}
 	}
 	
+	public QicvgTree(CommonTree lt) {
+		super(lt);
+	}
+
 	public Tree dupNode() {
 		return new QicvgTree(this);
 	}

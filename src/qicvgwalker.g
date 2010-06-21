@@ -337,11 +337,9 @@ color	:	COLORNAME|HEXNUMBER;
 
 
 expr returns [Double val] :	^('+' e1=expr e2=expr) {$val=$e1.val+$e2.val;}
-  |^('-' e1=expr e2=expr) {$val=$e1.val-$e2.val;}
-	|	term {$val=$term.val;};
-
-term returns [Double val]:	^('*' t1=term t2=term) {$val=$t1.val*$t2.val;}
-  | ^('/' t1=term t2=term) {$val=$t1.val/$t2.val;}
+  | ^('-' e1=expr e2=expr) {$val=$e1.val-$e2.val;}
+  | ^('*' e1=expr e2=expr) {$val=$e1.val*$e2.val;}
+  | ^('/' e1=expr e2=expr) {$val=$e1.val/$e2.val;}
 	|	atom {$val=$atom.val;};
 
 atom returns [Double val] :
