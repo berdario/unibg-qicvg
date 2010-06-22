@@ -58,6 +58,10 @@ public class QicvgTree extends CommonTree {
 			child.freshenParentAndChildIndexes();
 		}
 	}
+	
+	public QicvgTree getChild(int i){
+		return (QicvgTree) super.getChild(i);
+	}
 
 	public int getLine() {
 		return line;
@@ -65,5 +69,9 @@ public class QicvgTree extends CommonTree {
 
 	public int getColumn() {
 		return column;
+	}
+	
+	public Object accept(QicvgWalker w){
+		return w.visit(this);
 	}
 }

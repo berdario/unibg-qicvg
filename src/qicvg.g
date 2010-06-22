@@ -169,7 +169,7 @@ term	:	atom(('*'|'/')^atom)*;
 
 coord	:	math ;
 
-atom	:	('+'|'-')?INT
+atom	:	('+'^|'-'^)?INT
 	|	'(' math ')' -> ^(MATH math) 
 	|	ID'.'IDATTRIB -> ^(ID IDATTRIB) ;
 

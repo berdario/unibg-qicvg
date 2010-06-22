@@ -160,13 +160,11 @@ scope Scope {
   }
 }
 
-prog [HashMap<String,HashMap<String,Number>> containerPositions]
+prog
   scope Scope;
   @init{
     $Scope::vars = new HashMap<String,HashMap<String,Number>>();
     $Scope::styles = new HashMap<String, Style>();
-    //TODO aggiungere controllo per assenza di conflitti con ID già definiti
-    $Scope::vars.putAll(containerPositions);
   }
   :	(rows+=row)* {containers.put("",new Container());} -> svgfile(rows={$rows});
 
@@ -329,7 +327,7 @@ pathel	:	^(MOVETO ^(POSITION point)) -> template(p={$point.st}) "M <p> "
 	|	^(BEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ^(CONTROLPOINT p3=point) ) -> template(p1={$p1.st},p2={$p2.st},p3={$p3.st}) "C <p1> <p2> <p3> " 
 	|	^(SHORTHANDBEZIER ^(CONTROLPOINT p1=point) ^(CONTROLPOINT p2=point) ) -> template(p1={$p1.st},p2={$p2.st}) "S <p1> <p2> "
 	|	^(SHORTHANDQUADRATICBEZIER ^(CONTROLPOINT points+=point) (^(CONTROLPOINT points+=point))* ) -> template(points={$points}) "T <points>"
-	|	^(QUADRATICBEZIER ^(CONTROLPOINT points+=point) (^(CONTROLPOINT points+=point))+ ) -> template(points={$points}) "T <points>"
+	|	^(QUADRATICBEZIER ^(CONTROLPOINT points+=point) (^(CONTROLPOINT points+=point))+ ) -> template(points={$points}) "Q <points>"
 	;
 
 color	:	COLORNAME|HEXNUMBER;

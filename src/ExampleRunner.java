@@ -24,7 +24,7 @@ public class ExampleRunner {
 	 * @throws RecognitionException 
 	 */
 	public static void main(String[] args) throws IOException, RecognitionException {
-		qicvgLexer lex = new qicvgLexer(new ANTLRFileStream("test"+File.separator+"test1temp.txt","UTF8"));
+		qicvgLexer lex = new qicvgLexer(new ANTLRFileStream("test"+File.separator+"test1.txt","UTF8"));
 		CommonTokenStream tokens = new CommonTokenStream(lex);
 		qicvgParser parser = new qicvgParser(tokens);
 		
@@ -37,29 +37,19 @@ public class ExampleRunner {
 
 			QicvgTreeNodeStream aststream = new QicvgTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);
-			unroller unrollwalker = new unroller(aststream);
-			unrollwalker.setTreeAdaptor(new QicvgTreeAdaptor());
-			
-			tree = (QicvgTree) unrollwalker.prog(2,parser.containers).getTree();
-			/*tree.freshenParentAndChildIndexes();
-			tree.setUnknownTokenBoundaries();
-			tree.sanityCheckParentAndChildIndexes();*/
-			
-			//System.out.println("AST unrolled:");
-			//System.out.println(tree.toStringTree());
-
-			aststream = new QicvgTreeNodeStream(tree);
-			aststream.setTokenStream(tokens);
-			
-			qicvgwalker walker = new qicvgwalker(aststream);
+						
+			//qicvgwalker walker = new qicvgwalker(aststream);
 			
 			FileReader templateFile = new FileReader("src" + File.separator + "qicvgwalker.stg");
 			StringTemplateGroup templates = new StringTemplateGroup(templateFile);
 			templateFile.close();
-			walker.setTemplateLib(templates);
+			//walker.setTemplateLib(templates);
 			
-			qicvgwalker.prog_return output = walker.prog(unrollwalker.containerPositions);
-			System.out.println("output:\n"+output.getTemplate());
+			QicvgWalker walker = new QicvgWalker(aststream, templates);
+			System.out.println("risultato:\n"+walker.walk(7));
+			
+			/*qicvgwalker.prog_return output = walker.prog();
+			System.out.println("output:\n"+output.getTemplate());*/
 			//System.out.println("\n"+tokens.toString());
 			
 		}
