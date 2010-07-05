@@ -103,6 +103,7 @@ public class QicvgWalker {
 						|| children.get(2).getType() == qicvgParser.ID ){
 						index = 3;
 						style = getStyle(children.get(2),id);
+						//TODO add initDef... without it shouldn't be possible to reference paths inside containers
 					}
 				}catch (IndexOutOfBoundsException e) {
 					//ok to ignore
@@ -152,8 +153,8 @@ public class QicvgWalker {
 				Def def = initDef(defs,id,"rect");
 				def.vars.put("x",(new Expr(t.getChild(1).getChild(0))).accept(this));
 				def.vars.put("y",(new Expr(t.getChild(1).getChild(1))).accept(this));
-				def.vars.put("height",(new Expr(t.getChild(2).getChild(0))).accept(this));
-				def.vars.put("width",(new Expr(t.getChild(3).getChild(0))).accept(this));
+				def.vars.put("width",(new Expr(t.getChild(2).getChild(0))).accept(this));
+				def.vars.put("height",(new Expr(t.getChild(3).getChild(0))).accept(this));
 			    String style = getStyle(t.getChild(4),id);
 				return templates.getInstanceOf("rect",
 						new STAttrMap().put(
@@ -243,7 +244,7 @@ public class QicvgWalker {
 								"width", s.borderwidth)
 						).toString();
 			} else if (type == qicvgParser.POSITION || type == qicvgParser.CONTROLPOINT ){
-				return t.getChild(0)+" "+t.getChild(1);
+				return (new Expr(t.getChild(0))).accept(this)+" "+(new Expr(t.getChild(1))).accept(this);
 			} else if (type == qicvgParser.MOVETO){
 				return "M "+t.getChild(0).accept(this)+" ";
 			} else if (type == qicvgParser.LINETO){
@@ -377,24 +378,23 @@ public class QicvgWalker {
 		return container;
 	}
 	
-	String getStyle(QicvgTree t, String id){
-		try{
-			if (t.getType() == qicvgParser.ID){
-				//TODO sistemare
-				defs.get(id).style=styles.get(t.toString());
-				return (String) t.accept(this);
-			} else if (t.getType() == qicvgParser.STYLE){
-				Style style = (new IdReference(t)).accept(this);
+	String getStyle(QicvgTree t, String id) {
+		if (t.getType() == qicvgParser.ID) {
+			// TODO sistemare
+			defs.get(id).style = styles.get(t.toString());
+			return (String) t.accept(this);
+		} else if (t.getType() == qicvgParser.STYLE) {
+			Style style = (new IdReference(t)).accept(this);
+			try {
 				defs.get(id).style = style;
-				return templates.getInstanceOf("styledef",
-						new STAttrMap().put(
-								"color", style.fillcolor).put(
-								"bordercolor", style.bordercolor).put(
-								"width", style.borderwidth)
-						).toString();
+			} catch (NullPointerException e) {
+				// won't save definition
 			}
-		}catch(NullPointerException e){
-			//non-existant style?
+			return templates.getInstanceOf(
+					"styledef",
+					new STAttrMap().put("color", style.fillcolor).put(
+							"bordercolor", style.bordercolor).put("width",
+							style.borderwidth)).toString();
 		}
 		return null;
 	}
