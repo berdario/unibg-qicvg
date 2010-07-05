@@ -1,5 +1,5 @@
 group qicvgwalker;
-svgfile(rows) ::= "<rows; separator={<\n>}>"
+svgfile(rows) ::= "\<svg width=\"100%\" height=\"100%\" version=\"1.1\" baseProfile=\"full\" xmlns=\"http://www.w3.org/2000/svg\"\><\n><rows; separator={<\n>}><\n>\</svg\>"
 block(rows) ::= "<trunc(rows):{  <it><\n>}>  <last(rows)>"
 comment(comment) ::= "\<!--<comment>--\>"
 row(def,comment) ::= "<if(def)><def> <endif><comment>"
