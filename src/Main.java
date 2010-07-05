@@ -56,21 +56,19 @@ public class Main {
 
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		qicvgParser parser = new qicvgParser(tokens);
+		parser.setTreeAdaptor(new QicvgTreeAdaptor());
 
 		qicvgParser.prog_return ret = parser.prog();
-		CommonTree tree = (CommonTree) ret.getTree();
+		QicvgTree tree = (QicvgTree) ret.getTree();
 		if (ret.tree != null) { // needed when the input is empty
 			// System.out.println("AST generato:");
 			// System.out.println(tree.toStringTree());
 
-			CommonTreeNodeStream aststream = new CommonTreeNodeStream(tree);
+			QicvgTreeNodeStream aststream = new QicvgTreeNodeStream(tree);
 			aststream.setTokenStream(tokens);
-			qicvgwalker walker = new qicvgwalker(aststream);
+			QicvgWalker walker = new QicvgWalker(aststream,templates);
 
-			walker.setTemplateLib(templates);
-
-			qicvgwalker.prog_return output = walker.prog();
-			return output.getTemplate().toString();
+			return walker.walk(7);
 		}
 		throw new org.antlr.runtime.RecognitionException();
 
