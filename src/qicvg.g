@@ -135,7 +135,7 @@ containerrow	:	innerdef comment? | comment;
 
 innerdef: 
     def
-  | ID ID '(' point (',' FLOAT (',' FLOAT)?)? ')' -> ^(ID ID ^(POSITION point) ^(SCALE FLOAT)? ^(ANGLE FLOAT)?);
+  | ID ID '(' point (',' scale=number (',' angle=number)?)? ')' -> ^(ID ID ^(POSITION point) ^(SCALE $scale)? ^(ANGLE $angle)?);
 	
 style 	:	styledef
 	|	ID  ;
@@ -169,9 +169,12 @@ term	:	atom(('*'|'/')^atom)*;
 
 coord	:	math ;
 
-atom	:	('+'^|'-'^)?INT
+//TODO: permettere di usare +/- unari per le espressioni, e non solo per i numeri
+atom	:	number
 	|	'(' math ')' -> ^(MATH math) 
 	|	ID'.'IDATTRIB -> ^(ID IDATTRIB) ;
+
+number : ('+'^|'-'^)?(INT|FLOAT);
 
 ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
 		;

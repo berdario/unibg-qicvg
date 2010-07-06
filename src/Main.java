@@ -68,7 +68,7 @@ public class Main {
 			aststream.setTokenStream(tokens);
 			QicvgWalker walker = new QicvgWalker(aststream,templates);
 
-			return walker.walk(7);
+			return walker.walk(100);
 		}
 		throw new org.antlr.runtime.RecognitionException();
 

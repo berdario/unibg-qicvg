@@ -53,19 +53,16 @@ public class QicvgWalker {
 	String walk(int maxRecursion){
 		this.maxRecursion = maxRecursion;
 		QicvgTree tree = (QicvgTree) stream.getTreeSource();
+		ArrayList<String> result = new ArrayList<String>();
 		if (tree.isNil()){
-			ArrayList<String> result = new ArrayList<String>();
 			ArrayList<QicvgTree> children = (ArrayList<QicvgTree>) tree.getChildren();
 			for (QicvgTree child : children){
 				result.add((String) child.accept(this));
 			}
-			;
-			
-			return templates.getInstanceOf("svgfile", new STAttrMap().put("rows",result)).toString();
 		} else{
-			System.err.println("this shouldn't happen");
-			return null;
+			result.add((String) tree.accept(this));
 		}
+		return templates.getInstanceOf("svgfile", new STAttrMap().put("rows",result)).toString();
 	}
 	
 	String visit(QicvgTree t) {
@@ -234,7 +231,7 @@ public class QicvgWalker {
 				ContainerBlock block = new ContainerBlock();
 				block.addChildren(t.getChildren().subList(2, t.getChildCount()));
 			    initContainer(containers, id, (Container)block.accept(this) );
-			    return unroll(id,x,y);
+			    return startunroll(id,x,y);
 			} else if (type == qicvgParser.ID){
 				Style s = styles.get(t.toString());
 				return templates.getInstanceOf("styledef",
@@ -322,10 +319,10 @@ public class QicvgWalker {
 		int type = t.getType();
 		if (type == qicvgParser.MATH){
 			return (new Expr(t.getChild(0))).accept(this); 
-		} else if (t.getType() == qicvgParser.INT){
+		} else if (t.getType() == qicvgParser.INT || t.getType() == qicvgParser.FLOAT){
 			return new Double(t.toString());
 		} else if ((type == tokenNames.indexOf("'+'") || (type == tokenNames.indexOf("'-'")))
-						&& t.getChild(0).getType() == qicvgParser.INT ){
+						&& (t.getChild(0).getType() == qicvgParser.INT || t.getChild(0).getType() == qicvgParser.FLOAT) ){
 			return new Double(t.toString()+t.getChild(0).toString());
 		} else if (type == tokenNames.indexOf("'+'")){
 			return (new Expr(t.getChild(0))).accept(this)+(new Expr(t.getChild(1))).accept(this);
@@ -357,10 +354,10 @@ public class QicvgWalker {
 							.accept(this));
 					d.vars.put("y", (new Expr(child.getChild(1).getChild(1)))
 							.accept(this));
-					d.vars.put("scale", new Double(child.getChild(2)
-							.getChild(0).toString()));
-					d.vars.put("angle", new Double(child.getChild(3)
-							.getChild(0).toString()));
+					d.vars.put("scale", (new Expr(child.getChild(2)
+							.getChild(0))).accept(this));
+					d.vars.put("angle", (new Expr(child.getChild(3)
+							.getChild(0))).accept(this));
 					container.defs.put(id, d);
 				} else if (type == tokenNames.indexOf("'style'")
 						|| type == tokenNames.indexOf("'nfstyle'")) {
@@ -379,35 +376,37 @@ public class QicvgWalker {
 	}
 	
 	String getStyle(QicvgTree t, String id) {
-		if (t.getType() == qicvgParser.ID) {
-			// TODO sistemare
-			defs.get(id).style = styles.get(t.toString());
-			return (String) t.accept(this);
-		} else if (t.getType() == qicvgParser.STYLE) {
-			Style style = (new IdReference(t)).accept(this);
-			try {
-				defs.get(id).style = style;
-			} catch (NullPointerException e) {
-				// won't save definition
+		if (t != null) {
+			if (t.getType() == qicvgParser.ID) {
+				// TODO sistemare
+				defs.get(id).style = styles.get(t.toString());
+				return (String) t.accept(this);
+			} else if (t.getType() == qicvgParser.STYLE) {
+				Style style = (new IdReference(t)).accept(this);
+				try {
+					defs.get(id).style = style;
+				} catch (NullPointerException e) {
+					// won't save definition
+				}
+				return templates.getInstanceOf(
+						"styledef",
+						new STAttrMap().put("color", style.fillcolor).put(
+								"bordercolor", style.bordercolor).put("width",
+								style.borderwidth)).toString();
 			}
-			return templates.getInstanceOf(
-					"styledef",
-					new STAttrMap().put("color", style.fillcolor).put(
-							"bordercolor", style.bordercolor).put("width",
-							style.borderwidth)).toString();
 		}
 		return null;
 	}
-	
-	public String unroll(String containerid, double x, double y){
+
+	public String startunroll(String containerid, double x, double y){
 		Container c = containers.get(containerid);
-		currentBlock.push(transform(c.defs,x,y,1,0));
-		String result=unroll(containerid);
+		currentBlock.push(transform(c.defs,0,0,x,y,1,0));
+		String result=unroll(containerid, x, y);
 		currentBlock.pop();
 		return result;
 	}
 	
-	public String unroll(String containerid){
+	public String unroll(String containerid, double xi, double yi){
 		if (currentBlock.size() >= maxRecursion){
 			return "";
 		}
@@ -419,23 +418,25 @@ public class QicvgWalker {
 			if (!currentElement.templatename.equals("recursion")){
 				result += applyTemplate(currentElement);
 			} else{
+				double x = currentElement.vars.get("x").doubleValue();
+				double y = currentElement.vars.get("y").doubleValue();
 				currentBlock.push(transform(currentBlock.peek(),
-						currentElement.vars.get("x").doubleValue(),
-						currentElement.vars.get("y").doubleValue(),
+						xi, yi, x-xi, y-yi,
 						currentElement.vars.get("scale").doubleValue(),
 						currentElement.vars.get("angle").doubleValue()));
-				result += unroll(containerid);
+				result += unroll(containerid, x, y);
+				
 				currentBlock.pop();
 			}
 		}
 		return result;
 	}
 	
-	HashMap<String,Def> transform(HashMap<String,Def> in, double dx, double dy, double scale, double angle){
+	HashMap<String,Def> transform(HashMap<String,Def> in, double x0, double y0, double dx, double dy, double scale, double angle){
 		HashMap<String,Def> out = new HashMap<String, Def>(in);
 		for (String id : out.keySet()){
 			Def olddef = out.get(id);
-			Def newdef = new Def(olddef.templatename);
+			try{Def newdef = new Def(olddef.templatename);
 			newdef.style = olddef.style;
 			Number x,y,x2,y2,cx,cy;
 			x = olddef.vars.get("x");
@@ -446,19 +447,19 @@ public class QicvgWalker {
 			cy = olddef.vars.get("cy");
 			ArrayList<Double> point;
 			if (x != null && y != null){
-				point = rotate(dx,dy,x.doubleValue()+dx,y.doubleValue()+dy,angle);
-				newdef.vars.put("x",point.get(0)*scale);
-				newdef.vars.put("y",point.get(1)*scale);
+				point = rotate(x0,y0,x.doubleValue(),y.doubleValue(),angle);
+				newdef.vars.put("x",(point.get(0)-x0)*scale+x0+dx);
+				newdef.vars.put("y",(point.get(1)-y0)*scale+y0+dy);
 			}
 			if (x2 != null && y2 != null){
-				point = rotate(dx,dy,x2.doubleValue()+dx,y2.doubleValue()+dy,angle);
-				newdef.vars.put("x2",point.get(0)*scale);
-				newdef.vars.put("y2",point.get(1)*scale);
+				point = rotate(x0,y0,x2.doubleValue(),y2.doubleValue(),angle);
+				newdef.vars.put("x2",(point.get(0)-x0)*scale+x0+dx);
+				newdef.vars.put("y2",(point.get(1)-y0)*scale+y0+dy);
 			}
 			if (cx != null && cy != null){
-				point = rotate(dx,dy,cx.doubleValue()+dx,cy.doubleValue()+dy,angle);
-				newdef.vars.put("cx",point.get(0)*scale);
-				newdef.vars.put("cy",point.get(1)*scale);
+				point = rotate(x0,y0,cx.doubleValue(),cy.doubleValue(),angle);
+				newdef.vars.put("cx",(point.get(0)-x0)*scale+x0+dx);
+				newdef.vars.put("cy",(point.get(1)-y0)*scale+y0+dy);
 			}
 			
 			Number height,width,r,rx,ry;
@@ -485,6 +486,10 @@ public class QicvgWalker {
 			newdef.vars.put("scale",olddef.vars.get("scale"));
 			
 			out.put(id,newdef);
+			}catch(NullPointerException e){
+				out.put(id, new Def("path"));
+				//TODO handle paths
+			}
 		}
 		return out;
 	}
@@ -635,6 +640,14 @@ public class QicvgWalker {
 		
 		public Def(String templatename) {
 			this.templatename = templatename;
+		}
+		
+		public String toString(){
+			String result = templatename + " " + vars;
+			if (style != null){
+				result += style;
+			}
+			return result;
 		}
 	}
 }
