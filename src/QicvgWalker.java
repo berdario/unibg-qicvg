@@ -28,8 +28,7 @@ public class QicvgWalker {
 	
 	Def initDef(HashMap<String,Def> defs, String id, String templatename){
 	       if (defs.get(id) != null) {
-	         System.out.println("id trovato: "+id);//TODO recuperare riga
-	         
+	    	   System.err.println("Warning: L'id "+id+ " è riferito a più oggetti, i riferimenti potrebbero non essere corretti ");//TODO recuperare riga
 	       }
 	       Def def = new Def(templatename);
 	       defs.put(id,def);
@@ -45,7 +44,7 @@ public class QicvgWalker {
 	
 	void initStyle(HashMap<String, Style> styles, String id, Style s){
 	      if (styles.get(id) != null){
-	         //TODO throw eccezione
+	    	  System.err.println("Warning : Sono presenti più dichiarazioni dello stile '" + id + "' verrà considerata l'ultima occorrenza ");
 	      }
 	      styles.put(id,s);
 	}
@@ -234,6 +233,10 @@ public class QicvgWalker {
 			    return startunroll(id,x,y);
 			} else if (type == qicvgParser.ID){
 				Style s = styles.get(t.toString());
+				if (s==null) {
+					System.err.println("Lo stile " + t + " è stato richiamato senza essere dichiarato, verrà utilizzato lo stile di default");
+					s= new Style("black","black",1);
+				}
 				return templates.getInstanceOf("styledef",
 						new STAttrMap().put(
 								"color", s.fillcolor).put(
@@ -333,7 +336,18 @@ public class QicvgWalker {
 		} else if (type == tokenNames.indexOf("'/'")){
 			return (new Expr(t.getChild(0))).accept(this)/(new Expr(t.getChild(1))).accept(this);
 		} else if (type == qicvgParser.ID){ //reference to IDATTRIB
-			return defs.get(t.toString()).vars.get(t.getChild(0).toString()).doubleValue(); 
+			double d = 0.0;
+			try{
+				HashMap<String, Number> vars = defs.get(t.toString()).vars;
+				try{
+					d = vars.get(t.getChild(0).toString()).doubleValue();
+				} catch (Exception e){
+					System.err.println("Warning : Tentativo di accedere all'attributo "+ t.getChild(0) +" dell'oggetto "+ t +" non andato a buon fine:");
+				}
+			} catch (Exception e){
+				System.err.println("Warning : Tentativo di accedere all'attributo "+ t.getChild(0) +" dell'oggetto "+ t +" non andato a buon fine:");
+			}
+			return d;
 		}
 		System.err.println("this shouldn't happen");
 		return null;
@@ -551,7 +565,7 @@ public class QicvgWalker {
 		    //inizializzo il primo punto, il quale sarà orientato 
 		    //della meta dei gradi della corona esterna
 		    //il raggio interno è proporzionale all'esterno.
-		    double intradius = radius/4;
+		    double intradius = radius/3;
 		    //System.out.println("inizio il ciclo");  
 		    for (int i=0;i<nv;i++)
 		    {
