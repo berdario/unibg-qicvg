@@ -450,58 +450,63 @@ public class QicvgWalker {
 		HashMap<String,Def> out = new HashMap<String, Def>(in);
 		for (String id : out.keySet()){
 			Def olddef = out.get(id);
-			try{Def newdef = new Def(olddef.templatename);
-			newdef.style = olddef.style;
-			Number x,y,x2,y2,cx,cy;
-			x = olddef.vars.get("x");
-			y = olddef.vars.get("y");
-			x2 = olddef.vars.get("x2");
-			y2 = olddef.vars.get("y2");
-			cx = olddef.vars.get("cx");
-			cy = olddef.vars.get("cy");
-			ArrayList<Double> point;
-			if (x != null && y != null){
-				point = rotate(x0,y0,x.doubleValue(),y.doubleValue(),angle);
-				newdef.vars.put("x",(point.get(0)-x0)*scale+x0+dx);
-				newdef.vars.put("y",(point.get(1)-y0)*scale+y0+dy);
-			}
-			if (x2 != null && y2 != null){
-				point = rotate(x0,y0,x2.doubleValue(),y2.doubleValue(),angle);
-				newdef.vars.put("x2",(point.get(0)-x0)*scale+x0+dx);
-				newdef.vars.put("y2",(point.get(1)-y0)*scale+y0+dy);
-			}
-			if (cx != null && cy != null){
-				point = rotate(x0,y0,cx.doubleValue(),cy.doubleValue(),angle);
-				newdef.vars.put("cx",(point.get(0)-x0)*scale+x0+dx);
-				newdef.vars.put("cy",(point.get(1)-y0)*scale+y0+dy);
-			}
-			
-			Number height,width,r,rx,ry;
-			height = olddef.vars.get("height");
-			width = olddef.vars.get("width");
-			r = olddef.vars.get("r");
-			rx = olddef.vars.get("rx");
-			ry = olddef.vars.get("ry");
-			if (height != null && width != null){
-				newdef.vars.put("height",height.doubleValue()*scale);
-				newdef.vars.put("width",width.doubleValue()*scale);
-			} else if(width != null){
-				newdef.vars.put("width",width.doubleValue()*scale);
-			}
-			if (r != null){
-				newdef.vars.put("r",r.doubleValue()*scale);
-			}
-			if (rx != null && ry != null){
-				newdef.vars.put("rx",rx.doubleValue()*scale);
-				newdef.vars.put("ry",ry.doubleValue()*scale);
-			}
-			
-			newdef.vars.put("angle",olddef.vars.get("angle"));
-			newdef.vars.put("scale",olddef.vars.get("scale"));
-			
-			out.put(id,newdef);
+			try{
+				Def newdef = new Def(olddef.templatename);
+				newdef.style = olddef.style;
+				Number x, y, x2, y2, cx, cy;
+				x = olddef.vars.get("x");
+				y = olddef.vars.get("y");
+				x2 = olddef.vars.get("x2");
+				y2 = olddef.vars.get("y2");
+				cx = olddef.vars.get("cx");
+				cy = olddef.vars.get("cy");
+				ArrayList<Double> point;
+				if (x != null && y != null) {
+					point = rotate(x0, y0, x.doubleValue(), y.doubleValue(),
+							angle);
+					newdef.vars.put("x", (point.get(0) - x0) * scale + x0 + dx);
+					newdef.vars.put("y", (point.get(1) - y0) * scale + y0 + dy);
+				}
+				if (x2 != null && y2 != null) {
+					point = rotate(x0, y0, x2.doubleValue(), y2.doubleValue(),
+							angle);
+					newdef.vars.put("x2", (point.get(0) - x0) * scale + x0 + dx);
+					newdef.vars.put("y2", (point.get(1) - y0) * scale + y0 + dy);
+				}
+				if (cx != null && cy != null) {
+					point = rotate(x0, y0, cx.doubleValue(), cy.doubleValue(),
+							angle);
+					newdef.vars.put("cx", (point.get(0) - x0) * scale + x0 + dx);
+					newdef.vars.put("cy", (point.get(1) - y0) * scale + y0 + dy);
+				}
+
+				Number height, width, r, rx, ry;
+				height = olddef.vars.get("height");
+				width = olddef.vars.get("width");
+				r = olddef.vars.get("r");
+				rx = olddef.vars.get("rx");
+				ry = olddef.vars.get("ry");
+				if (height != null && width != null) {
+					newdef.vars.put("height", height.doubleValue() * scale);
+					newdef.vars.put("width", width.doubleValue() * scale);
+				} else if (width != null) {
+					newdef.vars.put("width", width.doubleValue() * scale);
+				}
+				if (r != null) {
+					newdef.vars.put("r", r.doubleValue() * scale);
+				}
+				if (rx != null && ry != null) {
+					newdef.vars.put("rx", rx.doubleValue() * scale);
+					newdef.vars.put("ry", ry.doubleValue() * scale);
+				}
+
+				newdef.vars.put("angle", olddef.vars.get("angle"));
+				newdef.vars.put("scale", olddef.vars.get("scale"));
+
+				out.put(id, newdef);
 			}catch(NullPointerException e){
 				out.put(id, new Def("path"));
+				e.printStackTrace();
 				//TODO handle paths
 			}
 		}
