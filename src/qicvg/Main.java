@@ -44,12 +44,8 @@ public class Main {
 
 	public String translate(String path) throws IOException,
 			org.antlr.runtime.RecognitionException {
-		// LOAD TEMPLATES
-		String groupFileName = "../qicvgwalker.stg";
-		InputStream groupStream = getClass().getResourceAsStream(groupFileName);
-		InputStreamReader groupReader = new InputStreamReader(groupStream);
-		StringTemplateGroup templates = new StringTemplateGroup(groupReader);
-		groupReader.close();
+		
+		StringTemplateGroup templates = getTemplates();
 
 		// PARSE INPUT AND BUILD AST
 		ANTLRFileStream input = new ANTLRFileStream(path, "UTF8");
@@ -73,6 +69,15 @@ public class Main {
 		}
 		throw new org.antlr.runtime.RecognitionException();
 
+	}
+	
+	public StringTemplateGroup getTemplates() throws IOException{
+		String groupFileName = "../qicvgwalker.stg";
+		InputStream groupStream = getClass().getResourceAsStream(groupFileName);
+		InputStreamReader groupReader = new InputStreamReader(groupStream);
+		StringTemplateGroup templates = new StringTemplateGroup(groupReader);
+		groupReader.close();
+		return templates;
 	}
 
 }

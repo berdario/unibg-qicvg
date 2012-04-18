@@ -1,4 +1,6 @@
 
+package qicvg;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -14,9 +16,6 @@ import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import qicvg.qicvgLexer;
-import qicvg.qicvgParser;
 
 
 public class WalkerTest {
@@ -43,14 +42,14 @@ public class WalkerTest {
 			CommonTokenStream tokens = new CommonTokenStream(lex);
 			qicvgParser parser = new qicvgParser(tokens);
 			try {
-				parser.setTreeAdaptor(new CommonTreeAdaptor());
+				parser.setTreeAdaptor(new QicvgTreeAdaptor());
 				qicvgParser.prog_return ret = parser.prog();
 				CommonTree tree = (CommonTree) ret.getTree();
-				if (ret.tree != null) { //needed when the input is empty
-					System.out.println(tree.toStringTree());
+				if (tree != null) { //needed when the input is empty
+					//System.out.println(tree.toStringTree());
 
-					//QicvgWalker walker = new QicvgWalker(new CommonTreeNodeStream(tree));
-					//walker.prog();
+					QicvgWalker walker = new QicvgWalker(new QicvgTreeNodeStream(tree), (new Main()).getTemplates());
+					walker.walk(100);
 				}
 			} catch (RecognitionException e) {
 				fail("Errore inaspettato nel parsing di "+f);
