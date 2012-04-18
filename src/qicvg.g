@@ -35,6 +35,8 @@ tokens {
 }
 
 @header {
+
+  package qicvg;
   import java.util.HashMap;
   import java.util.ArrayList;
 }

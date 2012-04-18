@@ -1,3 +1,4 @@
+package qicvg;
 
 public class IdReference extends QicvgTree {
 	public Style accept(QicvgWalker w){

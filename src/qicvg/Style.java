@@ -1,3 +1,4 @@
+package qicvg;
 class Style{
 	    String fillcolor, bordercolor;
 	    int borderwidth;

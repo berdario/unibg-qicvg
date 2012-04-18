@@ -16,3 +16,7 @@ src/qicvgwalker.tokens
 src/unroller.java
 src/unroller.tokens
 test/test1temp.txt
+qicv
+qicvgLexer.javsa
+qicvgLexer.java
+qicvgParser.java

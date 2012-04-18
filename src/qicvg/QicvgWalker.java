@@ -1,3 +1,4 @@
+package qicvg;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -448,9 +449,9 @@ public class QicvgWalker {
 	
 	HashMap<String,Def> transform(HashMap<String,Def> in, double x0, double y0, double dx, double dy, double scale, double angle){
 		HashMap<String,Def> out = new HashMap<String, Def>(in);
-		for (String id : out.keySet()){
+		for (String id : out.keySet()) {
 			Def olddef = out.get(id);
-			try{
+			try {
 				Def newdef = new Def(olddef.templatename);
 				newdef.style = olddef.style;
 				Number x, y, x2, y2, cx, cy;
@@ -504,10 +505,10 @@ public class QicvgWalker {
 				newdef.vars.put("scale", olddef.vars.get("scale"));
 
 				out.put(id, newdef);
-			}catch(NullPointerException e){
+			} catch (NullPointerException e) {
 				out.put(id, new Def("path"));
 				e.printStackTrace();
-				//TODO handle paths
+				// TODO handle paths
 			}
 		}
 		return out;

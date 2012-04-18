@@ -1,3 +1,4 @@
+package qicvg;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class Main {
 	public String translate(String path) throws IOException,
 			org.antlr.runtime.RecognitionException {
 		// LOAD TEMPLATES
-		String groupFileName = "qicvgwalker.stg";
+		String groupFileName = "../qicvgwalker.stg";
 		InputStream groupStream = getClass().getResourceAsStream(groupFileName);
 		InputStreamReader groupReader = new InputStreamReader(groupStream);
 		StringTemplateGroup templates = new StringTemplateGroup(groupReader);

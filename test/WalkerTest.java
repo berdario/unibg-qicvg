@@ -15,6 +15,9 @@ import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import qicvg.qicvgLexer;
+import qicvg.qicvgParser;
+
 
 public class WalkerTest {
 	
@@ -46,8 +49,8 @@ public class WalkerTest {
 				if (ret.tree != null) { //needed when the input is empty
 					System.out.println(tree.toStringTree());
 
-					qicvgwalker walker = new qicvgwalker(new CommonTreeNodeStream(tree));
-					walker.prog();
+					//QicvgWalker walker = new QicvgWalker(new CommonTreeNodeStream(tree));
+					//walker.prog();
 				}
 			} catch (RecognitionException e) {
 				fail("Errore inaspettato nel parsing di "+f);

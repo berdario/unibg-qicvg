@@ -12,6 +12,9 @@ import org.antlr.runtime.RecognitionException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import qicvg.qicvgLexer;
+import qicvg.qicvgParser;
+
 
 public class ParserTest {
 

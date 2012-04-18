@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
 
+import qicvg.qicvgLexer;
+
 public class LexerTest {
 	
 	static ArrayList<String> files = new ArrayList<String>(), failFiles = new ArrayList<String>();
