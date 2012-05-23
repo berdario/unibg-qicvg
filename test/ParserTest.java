@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
 import org.junit.BeforeClass;
+import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 
 import qicvg.qicvgLexer;

@@ -41,6 +41,10 @@ tokens {
   import java.util.ArrayList;
 }
 
+@lexer::header {
+  package qicvg;
+}
+
 @members {
   HashMap<String,ArrayList<QicvgTree>> containers = new HashMap<String,ArrayList<QicvgTree>>();
   //TODO: non supporta gli scope
